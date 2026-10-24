@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumLah — Chit Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1F1F3; --surface:#FFFFFF; --ink:#25272C; --muted:#6C6F77; --line:#D6D7DA;
+  --chip-off:#4C4F58; --red:#C0392B; --gold:#B8871E; --track:#E3E4E7;
+  --orange:#DD8A3B; --orange-light:#FCE7CE; --mono-blue:#173A63;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);font-family:'Inter',sans-serif;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:16px}
+@media(min-width:640px){body{padding:32px}}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+
+.font-display{font-family:'Zilla Slab',serif}
+.font-mono{font-family:'IBM Plex Mono',monospace}
+.font-body{font-family:'Inter',sans-serif}
+.font-700{font-weight:700}
+.font-bold{font-weight:700}
+.font-semibold{font-weight:600}
+
+/* ---- minimal utility layer (only the tokens D1 actually uses) ---- */
+.flex{display:flex} .grid{display:grid} .relative{position:relative} .absolute{position:absolute}
+.flex-1{flex:1} .flex-shrink-0{flex-shrink:0} .flex-wrap{flex-wrap:wrap}
+.items-center{align-items:center} .items-start{align-items:flex-start}
+.justify-between{justify-content:space-between} .justify-center{justify-content:center}
+.text-center{text-align:center} .text-left{text-align:left} .text-right{text-align:right}
+.whitespace-nowrap{white-space:nowrap} .outline-none{outline:none}
+.leading-none{line-height:1} .leading-relaxed{line-height:1.6} .leading-snug{line-height:1.35}
+.w-full{width:100%} .h-full{height:100%}
+.transition-all{transition:all .15s ease} .transition-colors{transition:background-color .15s ease}
+.grid-cols-2{grid-template-columns:repeat(2,1fr)} .grid-cols-3{grid-template-columns:repeat(3,1fr)}
+.grid-cols-4{grid-template-columns:repeat(4,1fr)} .grid-cols-6{grid-template-columns:repeat(6,1fr)}
+.gap-1{gap:4px}.gap-1\.5{gap:6px}.gap-2{gap:8px}.gap-2\.5{gap:10px}.gap-3{gap:12px}
+.mb-1{margin-bottom:4px}.mb-1\.5{margin-bottom:6px}.mb-2{margin-bottom:8px}.mb-2\.5{margin-bottom:10px}
+.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-5{margin-bottom:20px}.mb-6{margin-bottom:24px}
+.mt-0\.5{margin-top:2px}.mt-1{margin-top:4px}.mt-1\.5{margin-top:6px}.mt-2{margin-top:8px}
+.mt-2\.5{margin-top:10px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
+.p-1\.5{padding:6px}.p-3{padding:12px}.p-4{padding:16px}
+.px-0\.5{padding-left:2px;padding-right:2px}.px-1{padding-left:4px;padding-right:4px}
+.px-1\.5{padding-left:6px;padding-right:6px}.px-4{padding-left:16px;padding-right:16px}
+.px-5{padding-left:20px;padding-right:20px}.px-6{padding-left:24px;padding-right:24px}
+.py-0\.5{padding-top:2px;padding-bottom:2px}.py-2{padding-top:8px;padding-bottom:8px}
+.py-2\.5{padding-top:10px;padding-bottom:10px}.py-3{padding-top:12px;padding-bottom:12px}
+.py-3\.5{padding-top:14px;padding-bottom:14px}.py-6{padding-top:24px;padding-bottom:24px}
+.pt-1{padding-top:4px}.pt-5{padding-top:20px}.pb-3{padding-bottom:12px}
+.rounded{border-radius:6px}.rounded-lg{border-radius:12px}.rounded-xl{border-radius:16px}
+.rounded-full{border-radius:999px}.rounded-b-2xl{border-bottom-left-radius:16px;border-bottom-right-radius:16px}
+.text-xl{font-size:20px}.text-2xl{font-size:24px}.text-3xl{font-size:30px}.text-lg{font-size:18px}
+.text-base{font-size:16px}.text-sm{font-size:14px}
+.text-\[12px\]{font-size:12px}.text-\[13px\]{font-size:13px}.text-\[14px\]{font-size:14px}
+.tracking-\[0\.04em\]{letter-spacing:.04em}.tracking-\[0\.08em\]{letter-spacing:.08em}
+.tracking-\[0\.1em\]{letter-spacing:.1em}.tracking-\[0\.12em\]{letter-spacing:.12em}
+.tracking-\[0\.15em\]{letter-spacing:.15em}.tracking-\[0\.3em\]{letter-spacing:.3em}
+.w-5{width:20px}.w-8{width:32px}.w-9{width:36px}.w-11{width:44px}.w-12{width:48px}.w-14{width:56px}
+.h-5{height:20px}.h-6{height:24px}.h-8{height:32px}.h-9{height:36px}.h-14{height:56px}.h-2\.5{height:10px}.h-px{height:1px}
+.top-0\.5{top:2px}
+.opacity-60{opacity:.6}
+.border-2{border-width:2px;border-style:solid}
+.space-y-1\.5>*+*{margin-top:6px}.space-y-2>*+*{margin-top:8px}.space-y-2\.5>*+*{margin-top:10px}
+.space-y-3>*+*{margin-top:12px}.space-y-4>*+*{margin-top:16px}
+.text-muted{color:var(--muted)} .text-ink{color:var(--ink)}
+.text-gold{color:var(--gold)} .text-red{color:var(--red)} .text-orange{color:var(--orange)}
+.text-9A9CA3{color:#9A9CA3}
+.bg-white{background:#fff}
+
+/* ---- phone shell ---- */
+.phone-frame{width:375px;max-width:100%;height:780px;background:var(--bg);border-radius:44px;border:10px solid #111214;box-shadow:0 20px 50px rgba(0,0,0,0.25);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:22px;background:#111214;border-bottom-left-radius:14px;border-bottom-right-radius:14px;z-index:30}
+.status-bar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-weight:600;font-size:13px;color:var(--ink);flex-shrink:0}
+.home-indicator{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:4px;background:#111214;border-radius:4px;opacity:.6;z-index:30}
+.screen-scroll{flex:1;overflow-y:auto;padding:4px 18px 90px 18px;position:relative}
+.screen-scroll::-webkit-scrollbar{width:0}
+
+/* ---- splash ---- */
+.splash-overlay{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;transition:opacity .4s ease,transform .4s ease}
+.splash-el{opacity:0;transform:translateY(6px);animation:splashRise .45s cubic-bezier(.22,1,.36,1) forwards}
+.splash-el-logo{animation-delay:.02s}.splash-el-name{animation-delay:.26s}.splash-el-tag{animation-delay:.46s}
+@keyframes splashRise{to{opacity:1;transform:translateY(0)}}
+.splash-overlay.exiting{opacity:0;transform:translateY(-8px)}
+@media(prefers-reduced-motion:reduce){
+  .splash-overlay{transition:opacity .4s ease;transform:none}
+  .splash-overlay.exiting{transform:none}
+  .splash-el{transform:none;animation:splashFade .3s ease forwards}
+  .splash-el-logo,.splash-el-name,.splash-el-tag{animation-delay:0s}
+  @keyframes splashFade{to{opacity:1}}
+}
+.processing-overlay{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:40}
+.keypad-panel{max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .38s cubic-bezier(.4,0,.2,1),margin-top .38s cubic-bezier(.4,0,.2,1),opacity .28s ease .06s}
+.keypad-panel.open{max-height:340px;opacity:1;margin-top:14px}
+.numeric-keypad{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 16px 16px}
+.keypad-key{height:58px;border-radius:10px;background:var(--bg);font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--ink);display:flex;align-items:center;justify-content:center;border:none;width:100%}
+.keypad-key:active{background:#e3e4e7}
+.keypad-key-sub{font-size:13px;color:var(--muted);font-weight:600}
+@keyframes ticketSpin2D{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes circleRipple{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.35);opacity:0}}
+.processing-word{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+.toggle-track{background:var(--track);border:1px solid #D6D7DA;border-radius:999px;padding:4px;display:flex;gap:3px;width:100%;height:44px;box-sizing:border-box}
+.ticket-divider{display:flex;align-items:center}
+.ticket-divider-line{flex:1;height:2px;background:#D6D7DA}
+.ticket-divider-dot{width:11px;height:11px;border-radius:50%;border:2px solid #D6D7DA;background:transparent;flex-shrink:0;box-sizing:border-box}
+.toggle-btn{flex:1;border:none;display:flex;align-items:center;justify-content:center;padding:0 8px;border-radius:999px;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.04em;cursor:pointer;transition:all .15s ease;color:var(--ink);background:transparent}
+.toggle-btn.active{background:linear-gradient(180deg,#6b6e77 0%,#45474e 45%,#2b2d32 100%);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 3px rgba(0,0,0,.2)}
+
+.pill-btn{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:7px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink);box-shadow:0 2px 0 var(--line);transition:all .12s ease;cursor:pointer}
+.pill-btn:active{transform:scale(.96)}
+.pill-btn.active{background:linear-gradient(180deg,#6b6e77 0%,#45474e 45%,#2b2d32 100%);color:#fff;border-color:#232428;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -6px 10px rgba(0,0,0,.22)}
+
+.cta-dark{background:linear-gradient(180deg,#4c4f58 0%,#2b2d32 55%,#1a1b1e 100%);color:#fff;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -4px 8px rgba(0,0,0,.25);border:none}
+.cta-dark:disabled{opacity:.4}
+.cta-secondary{background:transparent;color:var(--ink);font-weight:700;border:1.5px solid var(--ink);box-shadow:none}
+.cta-secondary svg{color:var(--ink)}
+.cta-secondary:active{transform:scale(.98)}
+.cta-secondary:disabled{opacity:.4}
+
+.chip{font-family:'IBM Plex Mono',monospace;font-size:13px;width:30px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--bg);color:var(--ink);transition:all .12s ease;cursor:pointer}
+.chip-lg{width:38px;height:38px;font-size:13px}
+.chip:active{transform:scale(.94)}
+.chip.off{background:linear-gradient(180deg,#6b6e77 0%,#45474e 45%,#2b2d32 100%);border-color:#232428;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 3px rgba(0,0,0,.22)}
+
+.digit-badge{background:transparent;border:1px solid var(--line)}
+.sheet-scroll{overflow-y:auto;padding:8px 20px 28px}
+.menu-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.menu-backdrop.open{opacity:1;pointer-events:auto}
+.menu-drawer{position:absolute;top:0;right:0;bottom:0;left:0;background:var(--bg);z-index:41;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .32s cubic-bezier(.32,.72,0,1)}
+.menu-drawer.open{transform:translateX(0);box-shadow:-10px 0 30px rgba(0,0,0,.25)}
+.menu-subscreen{position:absolute;top:0;right:0;bottom:0;left:0;background:var(--bg);z-index:42;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.menu-subscreen.open{transform:translateX(0);box-shadow:-10px 0 30px rgba(0,0,0,.25)}
+
+.add-btn{border-radius:999px;background:linear-gradient(180deg,#6b6e77 0%,#45474e 45%,#2b2d32 100%);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -4px 6px rgba(0,0,0,.22);flex-shrink:0;border:none}
+.add-btn:disabled{opacity:.35}
+.add-btn:active{transform:scale(.94)}
+
+.surface-card{background:var(--surface);border:1px solid var(--line)}
+.badge-dot{position:absolute;top:0px;right:0px;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid var(--bg);box-shadow:0 0 0 0.5px rgba(0,0,0,.1)}
+.badge-dot-inline{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0;box-shadow:0 0 0 1px rgba(184,135,30,.25)}
+.notif-card-unread{background:#FEFAF1;border:1px solid #E8D3A0;border-left:3px solid var(--gold)}
+.notif-card-read{border-left:3px solid transparent}
+.surface-flat{background:var(--surface)}
+
+.ticket-card{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+.ticket-head{padding:12px 14px 10px;display:flex;align-items:center;justify-content:space-between;border-radius:16px 16px 0 0}
+.ticket-perf{position:relative;height:0;border-top:2px dashed var(--line)}
+.ticket-body{padding:18px 14px;border-radius:0 0 16px 16px;background:var(--surface)}
+.submenu-card-flat{box-shadow:none;border-radius:8px}
+.submenu-card-flat .ticket-head{border-radius:8px 8px 0 0}
+.submenu-card-flat .ticket-body{border-radius:0 0 8px 8px}
+.submenu-perf-solid{border-top:1px solid var(--line)}
+
+.entry-ticket{position:relative;display:flex;align-items:stretch;min-height:44px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:visible}
+.entry-ticket-value{display:flex;align-items:center;justify-content:center;flex:1;min-width:68px;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;letter-spacing:.16em;color:var(--muted)}
+.entry-ticket-value-toto{font-size:13px;letter-spacing:.06em;white-space:nowrap}
+.entry-ticket-perf{position:relative;width:0;border-left:1px solid var(--line);margin:7px 0}
+.entry-ticket-actions{display:flex;align-items:center;gap:0;padding:0 2px;flex-shrink:0}
+.entry-ticket-icon-btn{width:36px;height:36px;border:none;border-radius:999px;display:flex;align-items:center;justify-content:center;background:transparent;color:#6C6F77;cursor:pointer;flex-shrink:0}
+.entry-ticket-icon-btn.starred{color:#B8871E}
+.entry-ticket-notch{position:absolute;left:0;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--surface);border:1px solid var(--line)}
+.entry-ticket-notch-top{top:-9px}.entry-ticket-notch-bottom{bottom:-9px}
+
+.number-stub{position:relative;display:flex;align-items:stretch;min-height:38px;background:var(--surface);border:1px solid var(--line);border-radius:7px}
+.number-stub-value{display:flex;align-items:center;justify-content:center;padding:0 24px;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;letter-spacing:.22em;color:var(--muted)}
+.number-stub-perf{position:relative;width:0;border-left:1px solid var(--line);margin:6px 0}
+.number-stub-tail{width:54px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:transparent}
+.number-stub-notch{position:absolute;left:0;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--surface);border:1px solid var(--line)}
+.number-stub-notch-top{top:-10px}.number-stub-notch-bottom{bottom:-10px}
+
+.tagline{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;color:var(--muted)}
+.tagline-hero{font-size:13px}
+
+.shake-tab{position:absolute;right:-28px;z-index:46;touch-action:none;cursor:grab;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#4c4f58 0%,#2b2d32 55%,#1a1b1e 100%);color:#fff;border-radius:999px 0 0 999px;padding:0 14px 0 12px;height:48px;box-shadow:0 4px 14px rgba(0,0,0,.22);transition:width .22s ease,height .22s ease,border-radius .22s ease,padding .22s ease;overflow:hidden;white-space:nowrap;border:none}
+.shake-tab:active{cursor:grabbing}
+.shake-tab-collapsed{width:68px}
+.shake-tab-expanded{width:204px;height:62px;border-radius:999px 0 0 999px;padding:0 16px 0 12px;justify-content:flex-start}
+.shake-tab-text{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.15;text-align:left}
+.shake-tab-title{font-family:'Zilla Slab',serif;font-weight:700;font-size:15px;white-space:normal;text-align:left}
+.shake-tab-sub{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:10px;color:rgba(255,255,255,.72);white-space:normal;text-align:left}
+.not-a-prediction{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.5}
+@keyframes shakeWiggle{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-3px) rotate(-6deg)}30%{transform:translateX(3px) rotate(6deg)}45%{transform:translateX(-3px) rotate(-5deg)}60%{transform:translateX(3px) rotate(5deg)}75%{transform:translateX(-2px) rotate(-3deg)}90%{transform:translateX(2px) rotate(2deg)}}
+.shake-tab-shaking{animation:shakeWiggle .42s ease}
+
+/* slider control (Reality Check lookback years) */
+.slider-track-wrap{position:relative;height:28px;display:flex;align-items:center}
+.slider-track-bg{position:absolute;left:0;right:0;height:8px;border-radius:999px;background:#E3E4E7;border:1px solid #D6D7DA;overflow:hidden}
+.slider-track-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#6b6e77 0%,#2b2d32 100%);transition:width .15s ease}
+.slider-thumb{position:absolute;width:22px;height:22px;border-radius:50%;background:linear-gradient(180deg,#fff 0%,#E3E4E7 100%);border:1px solid #D6D7DA;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:left .15s ease;pointer-events:none;z-index:1}
+.slider-native{position:absolute;left:0;right:0;width:100%;opacity:0;height:28px;cursor:pointer;margin:0;z-index:2}
+
+/* toggle switch (Preferences) */
+.toggle-switch{width:44px;height:24px;border-radius:999px;position:relative;flex-shrink:0;transition:background-color .15s ease;border:none}
+.toggle-switch-knob{position:absolute;top:2px;width:20px;height:20px;border-radius:999px;background:#fff;transition:left .15s ease;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+
+/* info tooltip */
+.info-tip-btn{background:none;border:none;padding:2px;cursor:pointer;color:var(--mono-blue);line-height:1;display:inline-flex;align-items:center;flex-shrink:0}
+.info-tip-popup{position:fixed;width:200px;background:#25272C;color:#F1F1F3;border-radius:7px;padding:7px 10px;font-size:13px;line-height:1.5;font-family:'IBM Plex Mono',monospace;font-weight:500;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none;display:none;transform:translateY(-100%)}
+.confirm-backdrop{position:absolute;inset:0;background:rgba(37,39,44,.45);display:none;align-items:center;justify-content:center;z-index:60;padding:24px}
+.confirm-backdrop.open{display:flex}
+.confirm-dialog{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:22px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.confirm-title{font-family:'Zilla Slab',serif;font-weight:700;font-size:19px;color:var(--ink);margin-bottom:8px}
+.confirm-msg{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:20px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-keep{flex:1;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;padding:12px 0;border-radius:999px;background:transparent;color:var(--ink);border:1.5px solid var(--ink);cursor:pointer}
+.confirm-keep:active{transform:scale(.98)}
+.confirm-delete{flex:1;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;padding:12px 0;border-radius:999px;background:var(--red);color:#fff;border:1.5px solid var(--red);cursor:pointer}
+.confirm-delete:active{transform:scale(.98)}
+.info-tip-popup.show{display:block}
+.info-tip-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #25272C}
+</style>
+</head>
+<body>
+<div class="phone-frame" id="phoneFrame">
+
+  <div class="splash-overlay" id="splash">
+    <div class="splash-el splash-el-logo" id="splashLogo"></div>
+    <div class="text-center">
+      <h1 class="splash-el splash-el-name font-display font-700 text-2xl leading-none" style="font-size:30px;margin:0">NumLah</h1>
+      <p class="splash-el splash-el-tag tagline tagline-hero leading-none" id="splashTagline" style="margin-top:4px"></p>
+    </div>
+  </div>
+
+  <div class="notch"></div>
+  <div class="status-bar"><span>9:41</span><span class="font-mono opacity-60" style="font-size:14px">&#9679;&#9679;&#9679;&#9679;</span></div>
+
+  <button class="shake-tab shake-tab-collapsed" id="shakeTab" style="top:360px" aria-label="Shake Me Lah — get a random number"></button>
+
+  <div class="processing-overlay" id="processingOverlay" style="display:none">
+    <div id="processingLogo"></div>
+    <div class="processing-word" id="processingWord">Reading history…</div>
+  </div>
+
+  <div class="screen-scroll" id="screenScroll"></div>
+
+  <div class="menu-backdrop" id="menuBackdrop"></div>
+  <div class="menu-drawer" id="menuDrawer"></div>
+  <div class="menu-subscreen" id="menuSubscreen"></div>
+
+  <div class="info-tip-popup" id="infoTipPopup"></div>
+
+  <div class="confirm-backdrop" id="confirmBackdrop">
+    <div class="confirm-dialog">
+      <div class="confirm-title" id="confirmTitle"></div>
+      <div class="confirm-msg" id="confirmMsg"></div>
+      <div class="confirm-actions">
+        <button class="confirm-keep" id="confirmKeepBtn" onclick="cancelDelete()"></button>
+        <button class="confirm-delete" id="confirmDeleteBtn" onclick="proceedDelete()"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+/* ============================================================
+   ICONS — dependency-free inline SVG (matches lucide-react paths)
+   ============================================================ */
+function Ico(paths){
+  return function(props){
+    props = props || {};
+    var size = props.size || 24, color = props.color || 'currentColor', sw = props.strokeWidth || 2;
+    var cls = props.className || '';
+    var fill = props.fill !== undefined ? props.fill : 'none';
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width', size); svg.setAttribute('height', size);
+    svg.setAttribute('viewBox','0 0 24 24'); svg.setAttribute('fill', fill==='none' ? 'none' : fill);
+    svg.setAttribute('stroke', color); svg.setAttribute('stroke-width', sw);
+    svg.setAttribute('stroke-linecap','round'); svg.setAttribute('stroke-linejoin','round');
+    if(cls) svg.setAttribute('class', cls);
+    svg.style.flexShrink = '0';
+    paths.forEach(function(p){
+      if(typeof p === 'string'){ var el=document.createElementNS('http://www.w3.org/2000/svg','path'); el.setAttribute('d',p); svg.appendChild(el); }
+      else { var el2=document.createElementNS('http://www.w3.org/2000/svg', p.t); for(var k in p.a) el2.setAttribute(k, p.a[k]); svg.appendChild(el2); }
+    });
+    return svg;
+  };
+}
+function icoHTML(paths, props){
+  props = props || {};
+  var size = props.size || 24, color = props.color || 'currentColor', sw = props.strokeWidth || 2;
+  var fill = props.fill !== undefined ? props.fill : 'none';
+  var inner = paths.map(function(p){
+    if(typeof p === 'string') return '<path d="'+p+'"/>';
+    var attrs = Object.keys(p.a).map(function(k){ return k+'="'+p.a[k]+'"'; }).join(' ');
+    return '<'+p.t+' '+attrs+'/>';
+  }).join('');
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="'+fill+'" stroke="'+color+'" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:inline-block;vertical-align:middle">'+inner+'</svg>';
+}
+var ICON_PATHS = {
+  ChevronLeft:  ["m15 18-6-6 6-6"],
+  ChevronRight: ["m9 18 6-6-6-6"],
+  Sparkles:     ["M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z","M20 3v4","M22 5h-4","M4 17v2","M5 18H3"],
+  Menu:         ["M4 12h16","M4 6h16","M4 18h16"],
+  X:            ["M18 6 6 18","m6 6 12 12"],
+  Star:         ["M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"],
+  Info:         [{t:'circle',a:{cx:'12',cy:'12',r:'10'}},"M12 16v-4","M12 8h.01"],
+  Plus:         ["M5 12h14","M12 5v14"],
+  ScanSearch:   ["M3 7V5a2 2 0 0 1 2-2h2","M17 3h2a2 2 0 0 1 2 2v2","M21 17v2a2 2 0 0 1-2 2h-2","M7 21H5a2 2 0 0 1-2-2v-2",{t:'circle',a:{cx:'12',cy:'12',r:'3'}},"m16 16-1.9-1.9"],
+  Clock:        [{t:'circle',a:{cx:'12',cy:'12',r:'10'}},"M12 6v6l4 2"],
+  Bell:         ["M10.268 21a2 2 0 0 0 3.464 0","M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"],
+  SlidersHorizontal: ["M10 5H3","M12 19H3","M14 3v4","M16 17v4","M21 12h-9","M21 19h-5","M21 5h-7","M8 10v4","M8 12H3"],
+  Volume2:      ["M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z","M16 9a5 5 0 0 1 0 6","M19.364 18.364a9 9 0 0 0 0-12.728"],
+  Vibrate:      ["m2 8 2 2-2 2 2 2-2 2","m22 8-2 2 2 2-2 2 2 2",{t:'rect',a:{width:'8',height:'14',x:'8',y:'5',rx:'1'}}],
+  Trash2:       ["M3 6h18","M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6","M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2","M10 11v6","M14 11v6"],
+  LineChart:    ["M3 3v16a2 2 0 0 0 2 2h16","m19 9-5 5-4-4-3 3"],
+  Shuffle:      ["M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22","m18 2 4 4-4 4","M2 6h1.9c1.5 0 2.9.9 3.6 2.2","M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8","m18 14 4 4-4 4"]
+};
+function icon(name, props){ return icoHTML(ICON_PATHS[name], props); }
+
+// NumLah ticket-stub logo mark
+function logoSVG(size, spinTicket, pulseCircle){
+  size = size || 44;
+  var ripple = pulseCircle ? (
+    '<circle cx="160" cy="160" r="97" fill="none" stroke="#25272C" stroke-width="7" style="transform-origin:160px 160px;animation:circleRipple 1.6s ease-out infinite"/>' +
+    '<circle cx="160" cy="160" r="97" fill="none" stroke="#25272C" stroke-width="7" style="transform-origin:160px 160px;animation:circleRipple 1.6s ease-out infinite;animation-delay:0.8s"/>'
+  ) : '';
+  var gStyle = spinTicket ? ' style="transform-origin:160px 160px;animation:ticketSpin2D 1.6s linear infinite"' : '';
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="160" cy="160" r="97" fill="none" stroke="#25272C" stroke-width="7"/>'
+    + ripple
+    + '<g'+gStyle+'>'
+    + '<g transform="translate(10,90) rotate(-12 150 70)">'
+    + '<path d="M 16 0 L 134 0 A 16 16 0 0 0 166 0 L 284 0 A 16 16 0 0 1 300 16 L 300 124 A 16 16 0 0 1 284 140 L 166 140 A 16 16 0 0 0 134 140 L 16 140 A 16 16 0 0 1 0 124 L 0 16 A 16 16 0 0 1 16 0 Z" fill="#FFFFFF" stroke="#25272C" stroke-width="7" stroke-linejoin="round"/>'
+    + '<circle cx="150" cy="36" r="4.5" fill="#25272C"/><circle cx="150" cy="53" r="4.5" fill="#25272C"/><circle cx="150" cy="70" r="4.5" fill="#25272C"/><circle cx="150" cy="87" r="4.5" fill="#25272C"/><circle cx="150" cy="104" r="4.5" fill="#25272C"/>'
+    + '<text x="80" y="70" dy="0.35em" text-anchor="middle" font-size="90" font-weight="700" font-family="Zilla Slab, serif" fill="#25272C">N</text>'
+    + '<g transform="translate(200,37) scale(0.2355,0.1505)" fill="#25272C">'
+    + '<path d="M0 432 L6 432 L6 0 L0 0 Z"/><path d="M12 432 L18 432 L18 0 L12 0 Z"/><path d="M24 432 L48 432 L48 0 L24 0 Z"/><path d="M54 432 L60 432 L60 0 L54 0 Z"/><path d="M66 432 L72 432 L72 0 L66 0 Z"/><path d="M90 432 L102 432 L102 0 L90 0 Z"/><path d="M108 432 L114 432 L114 0 L108 0 Z"/><path d="M120 432 L126 432 L126 0 L120 0 Z"/><path d="M144 432 L156 432 L156 0 L144 0 Z"/><path d="M162 432 L168 432 L168 0 L162 0 Z"/><path d="M174 432 L180 432 L180 0 L174 0 Z"/><path d="M192 432 L204 432 L204 0 L192 0 Z"/><path d="M216 432 L222 432 L222 0 L216 0 Z"/><path d="M228 432 L234 432 L234 0 L228 0 Z"/><path d="M240 432 L264 432 L264 0 L240 0 Z"/><path d="M270 432 L276 432 L276 0 L270 0 Z"/>'
+    + '</g></g></g></svg>';
+}
+
+/* ============================================================
+   DATA / ANALYSIS HELPERS (ported 1:1 from React source)
+   ============================================================ */
+function seededWeight(n, salt){ var v = Math.sin(n*12.9898 + salt*78.233) * 43758.5453; return (v - Math.floor(v))*0.8 + 0.2; }
+function seededUniform(n, salt){ var v = Math.sin(n*12.9898 + salt*78.233) * 43758.5453; return v - Math.floor(v); }
+var TOTO_NUMS = Array.from({length:49}, function(_,i){ return i+1; });
+var TOTO_FREQ = TOTO_NUMS.map(function(n){ return seededWeight(n,1); });
+var DIGITS = Array.from({length:10}, function(_,i){ return i; });
+function digitWeights(position, salt){ return DIGITS.map(function(d){ return seededWeight(d+position*10, salt); }); }
+function weightedPickUnique(pool, weights, count, excluded){
+  var items = pool.map(function(v,i){ return {v:v, w:weights[i]}; }).filter(function(x){ return !excluded.has(x.v); });
+  var picked = []; var working = items.slice();
+  for(var k=0;k<count && working.length>0;k++){
+    var total = working.reduce(function(s,x){ return s+x.w; }, 0);
+    var r = Math.random()*total, idx=0;
+    for(; idx<working.length; idx++){ r -= working[idx].w; if(r<=0) break; }
+    idx = Math.min(idx, working.length-1);
+    picked.push(working[idx].v); working.splice(idx,1);
+  }
+  return picked.sort(function(a,b){ return a-b; });
+}
+
+function fourDAnalysis(value){
+  var digits = value.split('').map(Number);
+  var seed = parseInt(value, 10);
+  var seenChance = seededWeight(seed % 9973, 3);
+  var hasAppeared = seenChance > 0.45;
+  var lastSeenDays = Math.floor(seededWeight(seed % 9973, 21) * 180) + 1;
+  var gapDraws = Math.floor(seededWeight(seed % 9973, 5) * 60) + 1;
+  var prizeTiers = ['1st Prize','2nd Prize','3rd Prize','Starter','Conso'];
+  var prizeTier = prizeTiers[Math.floor(seededWeight(seed % 9973, 9) * prizeTiers.length)];
+  var perDigit = digits.map(function(d,pos){
+    return { pos:pos, digit:d, freqCount: Math.floor(digitWeights(pos,1)[d]*45)+2, gap: Math.floor(seededWeight(d+pos*10,11)*40) };
+  });
+  var oddCount = digits.filter(function(d){ return d%2===1; }).length;
+  return { hasAppeared:hasAppeared, lastSeenDays:lastSeenDays, gapDraws:gapDraws, prizeTier:prizeTier, perDigit:perDigit,
+    oddCount:oddCount, evenCount:4-oddCount, sum: digits.reduce(function(a,b){ return a+b; },0), hasRepeat: new Set(digits).size < digits.length };
+}
+function totoAnalysis(numbers){
+  var perNumber = numbers.map(function(n){ return { n:n, freqCount: Math.floor(TOTO_FREQ[n-1]*45)+2, gap: Math.floor(seededWeight(n,13)*35) }; });
+  return { perNumber: perNumber, sum: numbers.reduce(function(a,b){ return a+b; },0) };
+}
+function fourDInsights(a){
+  var out = [];
+  var rarest = a.perDigit.slice().sort(function(x,y){ return x.freqCount-y.freqCount; })[0];
+  var longest = a.perDigit.slice().sort(function(x,y){ return y.gap-x.gap; })[0];
+  if(a.hasAppeared){
+    if(a.lastSeenDays < 30) out.push(t('insightRecent')(a.lastSeenDays));
+    else if(a.lastSeenDays > 120) out.push(t('insightLongAbsent4d')(a.lastSeenDays));
+    else out.push(t('insightAverage')(a.lastSeenDays));
+  } else { out.push(t('insightNeverSeen')); }
+  out.push(t('insightRarestDigit')(rarest.digit, rarest.pos+1, rarest.freqCount));
+  if(longest.gap > 25) out.push(t('insightLongestGap')(longest.pos+1, longest.digit, longest.gap));
+  return out;
+}
+function totoInsights(a){
+  var out = [];
+  var sorted = a.perNumber.slice().sort(function(x,y){ return x.freqCount-y.freqCount; });
+  var rarest = sorted[0], mostSeen = sorted[sorted.length-1];
+  var longAbsent = a.perNumber.slice().sort(function(x,y){ return y.gap-x.gap; })[0];
+  if(a.sum < 110) out.push(t('insightSumLow')(a.sum));
+  else if(a.sum > 190) out.push(t('insightSumHigh')(a.sum));
+  else out.push(t('insightSumOk')(a.sum));
+  out.push(t('insightRarestMost')(rarest.n, rarest.freqCount, mostSeen.n, mostSeen.freqCount));
+  if(longAbsent.gap > 20) out.push(t('insightLongAbsentToto')(longAbsent.n, longAbsent.gap));
+  return out;
+}
+
+var DRAW_DAYS = { '4d':[3,6,0], 'toto':[1,4] };
+function getNextDrawInfo(game, now){
+  now = now || new Date();
+  var days = DRAW_DAYS[game];
+  for(var add=0; add<8; add++){
+    var candidate = new Date(now);
+    candidate.setDate(now.getDate()+add);
+    candidate.setHours(18,30,0,0);
+    if(days.indexOf(candidate.getDay())>-1 && candidate.getTime() > now.getTime()){
+      var isToday = add===0, isTomorrow = add===1;
+      var dayLabel = isToday ? 'Today' : isTomorrow ? 'Tomorrow' : candidate.toLocaleDateString('en-SG',{weekday:'short'});
+      var timeLabel = candidate.toLocaleTimeString('en-SG',{hour:'numeric',minute:'2-digit',hour12:true}).replace(/\s/g,'').toLowerCase();
+      return { dayLabel:dayLabel, timeLabel:timeLabel, date:candidate };
+    }
+  }
+  return null;
+}
+function getLastDrawInfo(game, now){
+  now = now || new Date();
+  var days = DRAW_DAYS[game];
+  for(var sub=0; sub<8; sub++){
+    var candidate = new Date(now);
+    candidate.setDate(now.getDate()-sub);
+    candidate.setHours(18,30,0,0);
+    if(days.indexOf(candidate.getDay())>-1 && candidate.getTime() <= now.getTime()){
+      var seed = candidate.getFullYear()*10000 + (candidate.getMonth()+1)*100 + candidate.getDate();
+      var dateLabel = candidate.toLocaleDateString('en-SG',{day:'2-digit',month:'short'});
+      if(game==='4d'){
+        function makeNumber(tierSalt){ return [0,1,2,3].map(function(i){ return Math.floor(seededWeight(seed+i*97, tierSalt)*10); }).join(''); }
+        return { dateLabel:dateLabel, prizes:{ first:makeNumber(17), second:makeNumber(41), third:makeNumber(59) }, date:candidate };
+      } else {
+        var weights = TOTO_NUMS.map(function(n){ return seededWeight(n+seed,23); });
+        var nums = weightedPickUnique(TOTO_NUMS, weights, 6, new Set()).sort(function(a,b){ return a-b; });
+        var additional = Math.floor(seededWeight(seed,29)*49)+1;
+        return { dateLabel:dateLabel, value:nums.join('-'), additional:additional, date:candidate };
+      }
+    }
+  }
+  return null;
+}
+
+var FOURD_PAYOUT = {
+  big: [ {tier:'1st Prize',p:1/10000,prize:2000}, {tier:'2nd Prize',p:1/10000,prize:1000}, {tier:'3rd Prize',p:1/10000,prize:490}, {tier:'Starter',p:10/10000,prize:250}, {tier:'Conso',p:10/10000,prize:60} ],
+  small: [ {tier:'1st Prize',p:1/10000,prize:3000}, {tier:'2nd Prize',p:1/10000,prize:2000}, {tier:'3rd Prize',p:1/10000,prize:800} ]
+};
+var TOTO_PAYOUT = [
+  {tier:'Group 1',p:1/13983816,prize:1000000}, {tier:'Group 2',p:1/2330636,prize:250000}, {tier:'Group 3',p:1/55491,prize:8000},
+  {tier:'Group 4',p:1/22197,prize:1000}, {tier:'Group 5',p:1/1083,prize:50}, {tier:'Group 6',p:1/812,prize:25}, {tier:'Group 7',p:1/61,prize:10}
+];
+function drawsPerYear(game){ return game==='4d' ? 156 : 104; }
+function runRealityCheck(o){
+  var totalDraws = Math.max(1, Math.round(drawsPerYear(o.game)*o.years));
+  var tiers = o.game==='4d' ? FOURD_PAYOUT[o.betType] : TOTO_PAYOUT;
+  var spent=0, won=0, hits=[];
+  for(var i=0;i<totalDraws;i++){
+    spent += o.stakePerDraw;
+    var r = seededUniform(o.seedKey + i*137, 53), cum=0;
+    for(var tier_i=0;tier_i<tiers.length;tier_i++){
+      cum += tiers[tier_i].p;
+      if(r < cum){ var prize = tiers[tier_i].prize*o.stakePerDraw; won += prize; hits.push({drawsAgo: totalDraws-i, tier: tiers[tier_i].tier, prize:prize}); break; }
+    }
+  }
+  hits.sort(function(a,b){ return a.drawsAgo-b.drawsAgo; });
+  return { totalDraws:totalDraws, spent:spent, won:won, net: won-spent, hits:hits };
+}
+
+/* ============================================================
+   LOCALISATION — English / 中文
+   ============================================================ */
+var STRINGS = {
+  en: {
+    tagline: 'Every number confirm got history lah',
+    checkHistory: "CHECK MY NUMBERS' HISTORY",
+    nextDraw: 'Next', // "Next {game} Draw:"
+    lastDraw: 'Last Draw',
+    prizeNote: '(sample) For Starter & Conso Prizes, check the official Singapore Pools site.',
+    enterA4d: 'ENTER A 4D NUMBER',
+    pick6: 'PICK 6 NUMBERS',
+    optional: '+1 OPTIONAL',
+    clear: 'clear',
+    confirmDeleteTitle: 'Sure you want to remove this number ah?',
+    confirmDeleteMsg4d: function(v){ return 'Remove '+v+' from your saved numbers.'; },
+    confirmDeleteMsgToto: function(v){ return 'Remove '+v+' from your saved numbers.'; },
+    confirmKeep: 'Keep',
+    confirmDelete: 'Delete',
+    totoMaxHint: 'Max 7 numbers — remove one to pick another.',
+    checkPatterns: 'Check Patterns',
+    enter4d: 'ENTER 4D NUMBER',
+    hide: 'Hide',
+    keyClear: 'Clear',
+
+    your4dNumbers: 'Your 4D Numbers',
+    yourTotoNumbers: 'Your Toto Numbers',
+    numberChecked: 'number checked',
+    numbersChecked: 'numbers checked',
+    numberWord: 'number',
+    numbersWord: 'numbers',
+    checkMoreNumbers: 'Check More Numbers',
+
+    lastSeen: 'LAST SEEN',
+    notInSample: 'Not in our sample',
+    daysAgo: 'days ago',
+    prize: 'PRIZE',
+    gapStat: 'GAP STAT (LAPSE)',
+    drawsSinceLast: 'draws since last appeared',
+    eachDigitHistory: "EACH DIGIT'S HISTORY",
+    eachNumberHistory: "EACH NUMBER'S HISTORY",
+    seenSuffix: '× seen',
+    gapSuffix: 'd gap',
+    whatStandsOut: 'WHAT STANDS OUT',
+    numbersAddUpTo: 'NUMBERS ADD UP TO',
+    typicalRange: '· typical ~120-180',
+    realityCheck: 'Reality Check',
+    notAPrediction: 'NOT A PREDICTION · DUMMY SAMPLE DATA',
+
+    whatIfPlayed: "What if you'd played",
+    everyDraw: 'every',
+    draw: 'draw?',
+    lookbackYears: 'LOOKBACK YEARS',
+    stakePerDraw: 'STAKE PER DRAW',
+    betType: 'BET TYPE',
+    big: 'Big',
+    small: 'Small',
+    ordinaryOnly: "Ordinary entry assumed — System bets aren't simulated in this POC.",
+    netOver: 'NET OVER',
+    year: 'YEAR',
+    years: 'YEARS',
+    totalSpent: 'TOTAL SPENT',
+    totalWon: 'TOTAL WON',
+    draws: 'draws',
+    spentLabel: 'Spent',
+    wonLabel: 'Won',
+    matchingDraws: 'MATCHING DRAWS',
+    more: 'more',
+    rcParagraphHit: function(y,yl,spent,won,hits){ return 'Over '+y+' '+yl+', you would have spent $'+spent+' and won $'+won+' across '+hits+' '+(hits===1?'draw':'draws')+' that matched.'; },
+    rcParagraphMiss: function(y,yl,spent,won){ return 'Over '+y+' '+yl+', you would have spent $'+spent+' and won $'+won+', with no matching draws in this window.'; },
+    rcDisclaimer: "This shows what already happened, not what will happen next. Every draw is independent — this number's past has no bearing on its future.",
+    sampleFooter: 'SAMPLE SIMULATION · PLAY RESPONSIBLY · NCPG HELPLINE 1800-6-668-668',
+    drawsAgo: 'draws ago',
+
+    menuTitle: 'Menu',
+    menuPreferences: 'Preferences',
+    menuNotifications: 'Notifications',
+    menuHistory: 'History',
+    menuFavourites: 'Favourite Numbers',
+    menuAbout: 'About NumLah',
+    playResponsibly: 'PLAY RESPONSIBLY · NCPG HELPLINE 1800-6-668-668',
+
+    prefSound: 'Sound Effect',
+    prefHaptic: 'Haptic Feedback',
+    prefTheme: 'Theme',
+    prefLanguage: 'Language / 语言',
+
+    noNotifications: "You're all caught up — no notifications right now.",
+    notif1Title: 'New Toto draw results are in',
+    notif1Body: 'Check your starred numbers against the latest draw.',
+    notif2Title: '4D draw closes soon',
+    notif2Body: "Today's draw closes at 6:30pm — check your numbers before then.",
+    notif3Title: 'Welcome to NumLah',
+    notif3Body: 'Every number confirm got history lah — start by checking one, or try Shake Me Lah.',
+    time2h: '2 hours ago',
+    timeYesterday: 'Yesterday',
+    time3d: '3 days ago',
+
+    historyNothingYet: 'Nothing here yet — you never check anything sia.',
+
+    favEmpty: 'Wah, favourites section still blur blur empty leh — tap the star on any number to pin it here.',
+    favEveryPastSearch: 'Every past search involving',
+    favStarHint: 'Star any numbers to keep it here.',
+
+    aboutTitle: 'About NumLah',
+    whatIsNumlah: 'WHAT IS NUMLAH',
+    whatIsNumlahBody: "NumLah started with a simple habit: jotting down numbers as they crossed our path — a car plate after a near-miss on the expressway, a queue ticket, a lucky birthday. We wanted a quick way to see what those numbers' histories actually looked like, without pretending we could predict anything. So NumLah lets you check your own numbers against the record, or shake up a fresh random one if you'd rather start blank — either way, it's exploration, not a crystal ball.",
+    howNumlahWorks: 'HOW NUMLAH WORKS',
+    checkMyNumbersHead: 'Check My Numbers',
+    checkMyNumbersBody: "Got a number that means something — a birthday, a car plate you glimpsed, a queue ticket? Enter it here and we'll show you its history: how often it's shown up, when it last appeared, and how typical its shape is.",
+    shakeMeLahHead: 'Shake Me Lah',
+    shakeMeLahBody: "Don't have a number in mind? Drag the tab on the right edge to wherever's comfortable, tap it, then tap again (or physically shake your phone) to fill in a random number for you — no weighting, no \"smarter\" pick, just a plain random draw to save you the decision. It then runs through the exact same honest history-read as any number you type in yourself.",
+    howNumlahReads: 'HOW NUMLAH READS A NUMBER',
+    howNumlahReadsBody: "When you check a number, we're not telling you if it'll win — we're telling you its story so far. For 4D, we look at how often each digit has shown up in its position and how long it's been since it last appeared. For TOTO, we look at each individual number's frequency and gap, plus where the set's total sits relative to the typical distribution. None of this changes your odds — Toto and 4D draws don't remember what came before, and neither should you rely on it — but a bit of context can make picking numbers, yours or ours, more interesting than picking blind.",
+    appInfo: 'APP INFO',
+    version: 'Version',
+    versionValue: '0.2.0 (Prototype)',
+    lastUpdated: 'Last updated',
+    lastUpdatedValue: 'Jul 2026',
+    disclaimer: 'DISCLAIMER',
+    disclaimerBody: 'Every Toto and 4D draw is an independent random event — past results have no bearing on future ones. NumLah surfaces historical patterns for fun and organisation only; the numbers it generates or checks are read as weighted-random or descriptive statistics, never predictions, and cannot improve your odds of winning.',
+
+    insightRecent: function(d){ return 'Still hot — this number appeared recently, only '+d+' days ago.'; },
+    insightLongAbsent4d: function(d){ return "Wah, long time no see this number sia — hasn't shown up in "+d+" days."; },
+    insightAverage: function(d){ return 'Last seen '+d+' days ago, roughly average for 4D numbers in our sample.'; },
+    insightNeverSeen: 'This one very shy leh — no recorded appearance in our sample draws.',
+    insightRarestDigit: function(digit,pos,freq){ return 'Digit '+digit+' in position '+pos+' is the shy one of the four — seen only '+freq+'× in that slot.'; },
+    insightLongestGap: function(pos,digit,gap){ return 'Position '+pos+' (digit '+digit+') confirm MIA the longest — '+gap+" days since it last showed face there."; },
+    insightSumLow: function(s){ return 'Your sum of '+s+' is on the low side — most draws fall between 120–180.'; },
+    insightSumHigh: function(s){ return 'Your sum of '+s+' is unusually high — most draws fall between 120–180.'; },
+    insightSumOk: function(s){ return 'Your total very on-the-dot — sum of '+s+' sits comfortably within the typical 120–180 range.'; },
+    insightRarestMost: function(rarest,rf,most,mf){ return rarest+' is the shy one of your numbers ('+rf+'×); '+most+' is the kaypoh one, always showing up ('+mf+'×).'; },
+    insightLongAbsentToto: function(n,d){ return 'Wah, long time no see '+n+' — '+d+' days since it last appeared.'; },
+  },
+  zh: {
+    tagline: '每个号码都有历史啦',
+    checkHistory: '查我的号码历史',
+    nextDraw: '下期',
+    lastDraw: '上期开彩',
+    prizeNote: '（样本）特别奖和安慰奖，请查看新加坡博彩公司官网。',
+    enterA4d: '输入 4D 号码',
+    pick6: '选 6 个号码',
+    optional: '+1 可选',
+    clear: '清除',
+    confirmDeleteTitle: '确定要删除这个号码吗？',
+    confirmDeleteMsg4d: function(v){ return '从你保存的号码中删除 '+v+'。'; },
+    confirmDeleteMsgToto: function(v){ return '从你保存的号码中删除 '+v+'。'; },
+    confirmKeep: '保留',
+    confirmDelete: '删除',
+    totoMaxHint: '最多选 7 个号码 — 先移除一个才能再选。',
+    checkPatterns: '查历史',
+    enter4d: '输入 4D 号码',
+    hide: '收起',
+    keyClear: '清除',
+
+    your4dNumbers: '你的 4D 号码',
+    yourTotoNumbers: '你的 Toto 号码',
+    numberChecked: '个号码已查',
+    numbersChecked: '个号码已查',
+    numberWord: '个号码',
+    numbersWord: '个号码',
+    checkMoreNumbers: '再查更多号码',
+
+    lastSeen: '上次出现',
+    notInSample: '不在样本里',
+    daysAgo: '天前',
+    prize: '奖项',
+    gapStat: '距离上次（间隔）',
+    drawsSinceLast: '期未出现',
+    eachDigitHistory: '每个数字的历史',
+    eachNumberHistory: '每个号码的历史',
+    seenSuffix: '次',
+    gapSuffix: '天',
+    whatStandsOut: '重点看看',
+    numbersAddUpTo: '号码总和',
+    typicalRange: '· 一般约 120-180',
+    realityCheck: '真实模拟',
+    notAPrediction: '不是预测 · 样本数据',
+
+    whatIfPlayed: '如果你每次都买',
+    everyDraw: '',
+    draw: '会怎样？',
+    lookbackYears: '回顾年数',
+    stakePerDraw: '每期投注额',
+    betType: '玩法',
+    big: '大',
+    small: '小',
+    ordinaryOnly: '默认普通投注 — 系统投注在此模拟中不支持。',
+    netOver: '总盈亏（',
+    year: '年）',
+    years: '年）',
+    totalSpent: '总花费',
+    totalWon: '总赢得',
+    draws: '期',
+    spentLabel: '花费',
+    wonLabel: '赢得',
+    matchingDraws: '中奖记录',
+    more: '更多',
+    rcParagraphHit: function(y,yl,spent,won,hits){ return '在'+y+yl+'里，你会花费 $'+spent+'，赢得 $'+won+'，共'+hits+'期中奖。'; },
+    rcParagraphMiss: function(y,yl,spent,won){ return '在'+y+yl+'里，你会花费 $'+spent+'，赢得 $'+won+'，这段期间没有中奖。'; },
+    rcDisclaimer: '这只显示已经发生的事，不是未来会发生的事。每次开彩都是独立的 — 这个号码的过去不会影响它的未来。',
+    sampleFooter: '样本模拟 · 负责任地游戏 · NCPG 求助热线 1800-6-668-668',
+    drawsAgo: '期前',
+
+    menuTitle: '菜单',
+    menuPreferences: '设置',
+    menuNotifications: '通知',
+    menuHistory: '历史记录',
+    menuFavourites: '收藏号码',
+    menuAbout: '关于 NumLah',
+    playResponsibly: '负责任地游戏 · NCPG 求助热线 1800-6-668-668',
+
+    prefSound: '音效',
+    prefHaptic: '震动反馈',
+    prefTheme: '主题',
+    prefLanguage: 'Language / 语言',
+
+    noNotifications: '目前没有新通知，都看完了。',
+    notif1Title: '新一期 Toto 开彩结果出来了',
+    notif1Body: '快去对一对你收藏的号码。',
+    notif2Title: '4D 快截止了',
+    notif2Body: '今天的开彩 6:30pm 截止 — 记得先查看你的号码。',
+    notif3Title: '欢迎使用 NumLah',
+    notif3Body: '每个号码都有历史啦 — 先查一个号码，或试试摇一摇。',
+    time2h: '2小时前',
+    timeYesterday: '昨天',
+    time3d: '3天前',
+
+    historyNothingYet: '还没有记录咧 — 你从来没查过号码。',
+
+    favEmpty: '哇，收藏夹还空空的咧 — 点星星就可以收藏号码。',
+    favEveryPastSearch: '关于这个号码的所有记录：',
+    favStarHint: '点星星收藏任何号码。',
+
+    aboutTitle: '关于 NumLah',
+    whatIsNumlah: '什么是 NUMLAH',
+    whatIsNumlahBody: 'NumLah 的开始很简单：把路上遇到的号码记下来 — 差点撞车后的车牌、排队的号码单、幸运的生日。我们想要一个简单的方法，看看这些号码的历史到底长怎样，而不假装能预测什么。所以 NumLah 让你查自己的号码，或者摇一个随机的号码来开始 — 无论哪种，这都是探索，不是水晶球。',
+    howNumlahWorks: 'NUMLAH 怎么用',
+    checkMyNumbersHead: '查我的号码',
+    checkMyNumbersBody: '有一个对你有意义的号码吗 — 生日、瞥见的车牌、排队号码单？输入在这里，我们会显示它的历史：出现过几次、上次是什么时候、它的形态有多典型。',
+    shakeMeLahHead: '摇一摇',
+    shakeMeLahBody: '没有想好的号码？拖动右边的标签到你喜欢的位置，点一下，再点一下（或真的摇一摇手机）就能帮你填一个随机号码 — 没有加权，没有"更聪明"的选择，只是简单的随机抽取，帮你省下决定的功夫。之后它会用跟你自己输入的号码一样诚实的历史分析来查看。',
+    howNumlahReads: 'NUMLAH 怎么解读号码',
+    howNumlahReadsBody: '当你查一个号码时，我们不是在告诉你它会不会中奖 — 我们是在告诉你它到目前为止的故事。对于 4D，我们看每个数字在那个位置出现的频率，以及它上次出现是多久以前。对于 TOTO，我们看每个号码的出现频率和间隔，还有这组号码的总和相对于典型分布的位置。这些都不会改变你的中奖率 — Toto 和 4D 开彩不会记得之前发生的事，你也不应该依赖它 — 但了解一点背景，会让选号码这件事，比盲选更有意思一点。',
+    appInfo: '应用信息',
+    version: '版本',
+    versionValue: '0.2.0（原型）',
+    lastUpdated: '最后更新',
+    lastUpdatedValue: '2026年7月',
+    disclaimer: '免责声明',
+    disclaimerBody: '每一期 Toto 和 4D 开彩都是独立的随机事件 — 过去的结果不会影响未来的结果。NumLah 呈现历史规律只是为了娱乐和整理记录；它生成或查询的号码只是加权随机或描述性统计，绝不是预测，也无法提高你的中奖率。',
+
+    insightRecent: function(d){ return '还很热门 — 这个号码最近才出现过，只是'+d+'天前。'; },
+    insightLongAbsent4d: function(d){ return '哇，这个号码好久没出现了咧 — 已经'+d+'天没出现了。'; },
+    insightAverage: function(d){ return d+'天前出现过，在样本里算是一般水平。'; },
+    insightNeverSeen: '这个很害羞咧 — 样本里完全没有它的记录。',
+    insightRarestDigit: function(digit,pos,freq){ return '第'+pos+'位的数字'+digit+'是四个里最少见的 — 那个位置只出现过'+freq+'次。'; },
+    insightLongestGap: function(pos,digit,gap){ return '第'+pos+'位（数字'+digit+'）消失最久啦 — 已经'+gap+'天没在那个位置出现过。'; },
+    insightSumLow: function(s){ return '你的总和'+s+'偏低 — 大部分开彩的总和落在 120–180 之间。'; },
+    insightSumHigh: function(s){ return '你的总和'+s+'偏高 — 大部分开彩的总和落在 120–180 之间。'; },
+    insightSumOk: function(s){ return '你的总和'+s+'刚刚好 — 落在典型的 120–180 范围内。'; },
+    insightRarestMost: function(rarest,rf,most,mf){ return rarest+'是你号码里最少见的（'+rf+'次）；'+most+'是最常出现的常客（'+mf+'次）。'; },
+    insightLongAbsentToto: function(n,d){ return '哇，好久没见'+n+'了 — 已经'+d+'天没出现过。'; },
+  }
+};
+function t(key){
+  var lang = (state && state.language) || 'en';
+  var val = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key];
+  return val === undefined ? key : val;
+}
+
+var TOOLTIPS_EN = {
+  lastSeen: "How many days ago this number last appeared in an actual draw.",
+  prize: "The prize tier it won the last time it appeared.",
+  gapStat: "How many draws have passed since this number last showed up. Longer gap = it's been 'absent' longer.",
+  eachDigit: "How often each individual digit (0–9) has appeared in that position across all draws in the sample.",
+  eachNumber: "How often each number has appeared across all draws in the sample, and how many days since it last showed up.",
+  lookback: "How far back in draw history to look. 'All' uses every draw we have; smaller windows show more recent patterns.",
+  sum: "The 6 numbers added together. Most random draws fall between 120–180 — a purely mathematical fact about distribution, not a prediction."
+};
+var TOOLTIPS_ZH = {
+  lastSeen: '这个号码上一次在真实开彩中出现，是多少天前。',
+  prize: '它上一次出现时中的奖项等级。',
+  gapStat: "距离这个号码上次出现，已经过了几期。间隔越长 = '消失'越久。",
+  eachDigit: '样本中所有开彩里，每个数字（0–9）在这个位置出现的频率。',
+  eachNumber: '样本中所有开彩里，每个号码出现的频率，以及距离上次出现多少天。',
+  lookback: "要回顾多久以前的开彩记录。'All' 使用我们拥有的所有记录；较短的区间显示更近期的规律。",
+  sum: '6 个号码加起来的总和。大部分随机开彩的总和落在 120–180 之间 — 这只是分布上的数学事实，不是预测。'
+};
+var TOOLTIPS = TOOLTIPS_EN; // kept for structural compatibility; use tooltipText(key) for live lookup
+function tooltipText(key){
+  var lang = (state && state.language) || 'en';
+  var src = lang === 'zh' ? TOOLTIPS_ZH : TOOLTIPS_EN;
+  return src[key] || '';
+}
+
+/* ============================================================
+   SOUND EFFECTS
+   ============================================================ */
+var audioCtx = null;
+function actx(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
+function tone(freq,type,dur,vol,delay){
+  vol = vol||0.18; delay = delay||0;
+  if(!state.soundEffect) return;
+  try{
+    var ac = actx(); var osc = ac.createOscillator(); var gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    osc.type = type; osc.frequency.value = freq;
+    var startTime = ac.currentTime + delay;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(vol, startTime+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime+dur);
+    osc.start(startTime); osc.stop(startTime+dur+0.05);
+  }catch(e){}
+}
+var sfx = {
+  addEntry: function(){ tone(880,'sine',0.08,0.12); },
+  star: function(){ tone(660,'sine',0.1,0.1); tone(880,'sine',0.1,0.1,0.1); },
+  ctaSubmit: function(){ tone(440,'sine',0.15,0.1); tone(554,'sine',0.15,0.1,0.06); tone(659,'sine',0.2,0.1,0.12); },
+  remove: function(){ tone(330,'triangle',0.12,0.1); }
+};
+
+/* ============================================================
+   RENDER: Menu drawer + subscreens
+   ============================================================ */
+function renderMenuDrawerUI(){
+  var el = document.getElementById('menuDrawer');
+  el.className = 'menu-drawer' + (state.menuOpen ? ' open' : '');
+  var items = [
+    {key:'preferences', label:t('menuPreferences'), icon:'SlidersHorizontal'},
+    {key:'notifications', label:t('menuNotifications'), icon:'Bell'},
+    {key:'history', label:t('menuHistory'), icon:'Clock'},
+    {key:'favourites', label:t('menuFavourites'), icon:'Star'},
+    {key:'info', label:t('menuAbout'), icon:'Info'}
+  ];
+  var h = '<div class="flex items-center justify-between px-5 pb-3" style="padding-top:44px">';
+  h += '<h2 class="font-display font-700 text-lg">'+t('menuTitle')+'</h2>';
+  h += '<button id="btnMenuClose" class="flex items-center justify-center rounded-full" style="width:32px;height:32px;background:#F1F1F3;border:none">'+icon('X',{size:20})+'</button>';
+  h += '</div>';
+  h += '<div class="sheet-scroll" style="flex:1">';
+  items.forEach(function(it){
+    var dot = (it.key==='notifications' && hasUnreadNotifs()) ? '<span class="badge-dot-inline"></span>' : '';
+    h += '<button data-menu-open="'+it.key+'" class="w-full flex items-center gap-3 surface-card rounded-lg p-3 mb-2.5 font-mono text-[14px] tracking-[0.04em]" style="color:var(--ink)">'
+       + icon(it.icon,{size:18,color:'var(--muted)'})
+       + '<span class="flex-1 text-left">'+it.label+'</span>'+dot+icon('ChevronRight',{size:18,color:'var(--muted)'})+'</button>';
+  });
+  h += '<div class="mt-3 px-1 font-mono text-[14px] leading-relaxed text-center" style="color:var(--muted)">'+t('playResponsibly')+'</div>';
+  h += '</div>';
+  el.innerHTML = h;
+  wireMenuDrawerEvents();
+}
+
+function wireMenuDrawerEvents(){
+  document.getElementById('btnMenuClose').onclick = function(){ markNotificationsReadIfViewed(); state.menuOpen=false; state.menuScreen=null; render(); };
+  document.querySelectorAll('[data-menu-open]').forEach(function(b){
+    b.onclick = function(){ state.menuScreen = b.getAttribute('data-menu-open'); render(); };
+  });
+}
+
+function subscreenHeaderHTML(title, backAttr){
+  return '<div class="flex items-center gap-2 px-5 pb-3" style="padding-top:44px">'
+    + '<button '+backAttr+' class="flex items-center justify-center rounded-full" style="width:32px;height:32px;background:#F1F1F3;border:none">'+icon('ChevronLeft',{size:20})+'</button>'
+    + '<h1 class="font-display font-700 text-xl leading-none">'+title+'</h1></div>';
+}
+
+function renderMenuSubscreenUI(){
+  var el = document.getElementById('menuSubscreen');
+  el.className = 'menu-subscreen' + (state.menuScreen ? ' open' : '');
+  if(!state.menuScreen){ return; } // keep last content while closing (transition)
+  var h = '';
+  if(state.menuScreen === 'preferences') h = renderPreferencesHTML();
+  else if(state.menuScreen === 'notifications') h = renderNotificationsHTML();
+  else if(state.menuScreen === 'history') h = renderHistoryHTML();
+  else if(state.menuScreen === 'favourites') h = renderFavouritesHTML();
+  else if(state.menuScreen === 'info') h = renderInfoHTML();
+  el.innerHTML = h;
+  wireSubscreenEvents();
+}
+
+function renderPreferencesHTML(){
+  var h = subscreenHeaderHTML(t('menuPreferences'), 'id="btnSubBack" data-sub-back="1"');
+  h += '<div class="sheet-scroll" style="flex:1">';
+  h += toggleCardHTML(t('prefSound'), 'Volume2', state.soundEffect, 'soundEffect');
+  h += toggleCardHTML(t('prefHaptic'), 'Vibrate', state.hapticFeedback, 'hapticFeedback');
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2 mt-2" style="color:var(--mono-blue)">'+t('prefTheme')+'</div>';
+  h += '<div class="toggle-track mb-5">'
+     + '<button data-theme="cc" class="toggle-btn '+(state.theme==='cc'?'active':'')+'">Chit Chat</button>'
+     + '<button data-theme="tt" class="toggle-btn '+(state.theme==='tt'?'active':'')+'">Teh Tarik</button></div>';
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('prefLanguage')+'</div>';
+  h += '<div class="toggle-track mb-3">'
+     + '<button data-lang="en" class="toggle-btn '+(state.language==='en'?'active':'')+'">English</button>'
+     + '<button data-lang="zh" class="toggle-btn '+(state.language==='zh'?'active':'')+'">中文</button></div>';
+
+  h += '</div>';
+  return h;
+}
+function toggleCardHTML(label, iconName, checked, key){
+  return '<div class="surface-card rounded-lg p-4 mb-3"><div class="flex items-center justify-between">'
+    + '<span class="flex items-center gap-2 font-mono text-[14px]" style="color:var(--ink)">'+icon(iconName,{size:16,color:'var(--muted)'})+' '+label+'</span>'
+    + '<button data-toggle-pref="'+key+'" class="toggle-switch" style="background:'+(checked?'#25272C':'#D6D7DA')+'"><span class="toggle-switch-knob" style="left:'+(checked?'22px':'2px')+'"></span></button>'
+    + '</div></div>';
+}
+
+function renderNotificationsHTML(){
+  var h = subscreenHeaderHTML(t('menuNotifications'), 'data-sub-back="1"');
+  h += '<div class="sheet-scroll" style="flex:1">';
+  if(state.notifications.length===0) h += '<div class="font-mono text-[14px] text-center py-6" style="color:var(--muted)">'+t('noNotifications')+'</div>';
+  h += '<div class="space-y-2">';
+  state.notifications.forEach(function(n){
+    var unread = !n.read;
+    var cardClass = unread ? 'notif-card-unread' : 'surface-card notif-card-read';
+    var titleStyle = unread ? 'color:var(--ink);font-weight:700' : 'color:var(--muted);font-weight:500';
+    var dot = unread ? '<span class="badge-dot-inline" style="margin-right:6px;flex-shrink:0"></span>' : '';
+    h += '<div class="rounded-lg p-3 flex items-start gap-3 '+cardClass+'">'
+       + '<div class="flex items-center justify-center rounded-full flex-shrink-0" style="width:32px;height:32px;background:#FCE7CE;margin-top:2px">'+icon('Bell',{size:16,color:'#DD8A3B'})+'</div>'
+       + '<div class="flex-1"><div class="font-mono text-[14px] flex items-center" style="'+titleStyle+'">'+dot+t(n.titleKey)+'</div>'
+       + '<div class="font-mono text-[14px] mt-0.5 leading-snug" style="color:var(--muted)">'+t(n.bodyKey)+'</div>'
+       + '<div class="font-mono text-[14px] mt-1.5" style="color:var(--muted)">'+t(n.timeKey)+'</div></div>'
+       + '<button data-del-notif="'+n.id+'" class="flex-shrink-0 p-1.5" style="margin:-6px;background:none;border:none;color:var(--muted)">'+icon('Trash2',{size:20})+'</button>'
+       + '</div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+function sessionChips(r){ return r.entries.map(function(e){ return r.game==='4d' ? e.value : e.numbers.join('-'); }); }
+
+function renderHistoryHTML(){
+  var h = subscreenHeaderHTML(t('menuHistory'), 'data-sub-back="1"');
+  h += '<div class="sheet-scroll" style="flex:1">';
+  h += '<div class="toggle-track mb-5">'
+     + '<button data-history-tab="4d" class="toggle-btn '+(state.historyTab==='4d'?'active':'')+'">4D</button>'
+     + '<button data-history-tab="toto" class="toggle-btn '+(state.historyTab==='toto'?'active':'')+'">TOTO</button></div>';
+
+  var filtered = state.history.filter(function(r){ return r.game===state.historyTab; }).sort(function(a,b){ return b.timestamp-a.timestamp; });
+  var byDate = [];
+  filtered.forEach(function(r){
+    var label = r.timestamp.toLocaleDateString(state.language==='zh'?'zh-SG':'en-SG',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+    var last = byDate[byDate.length-1];
+    if(last && last.label===label) last.records.push(r); else byDate.push({label:label, records:[r]});
+  });
+
+  if(byDate.length===0) h += '<div class="font-mono text-[14px] text-center py-6" style="color:var(--muted)">'+t('historyNothingYet')+'</div>';
+
+  byDate.forEach(function(group){
+    h += '<div class="mb-5"><div class="flex items-center gap-2 mb-2"><span class="font-mono font-semibold text-[14px]" style="color:var(--muted)">'+group.label+'</span><div class="flex-1" style="height:1px;background:var(--line)"></div></div>';
+    group.records.forEach(function(r){
+      var chips = sessionChips(r);
+      var time = r.timestamp.toLocaleTimeString(state.language==='zh'?'zh-SG':'en-SG',{hour:'2-digit',minute:'2-digit',hour12:true});
+      h += '<button data-open-history="'+r.id+'" class="w-full surface-card rounded-lg p-3 mb-2 text-left">'
+         + '<div class="flex items-center justify-between mb-2">'
+         + '<div class="flex items-center gap-1.5"><span class="font-mono text-[14px]" style="color:var(--muted)">'+time+'</span><span class="font-mono text-[14px]" style="color:var(--muted)">· '+chips.length+' '+(chips.length===1?t('numberWord'):t('numbersWord'))+'</span></div>'
+         + '<div class="flex items-center gap-1.5">'+icon('ChevronRight',{size:18,color:'var(--muted)'})+'</div></div>'
+         + '<div class="flex flex-wrap gap-1">'
+         + chips.slice(0,4).map(function(c){ return '<span class="font-mono text-[14px] font-semibold rounded" style="color:var(--muted);background:#F1F1F3;padding:2px 6px">'+c+'</span>'; }).join('')
+         + (chips.length>4 ? '<span class="font-mono text-[14px]" style="color:var(--muted);padding:2px 4px">+'+(chips.length-4)+' '+t('more')+'</span>' : '')
+         + '</div></button>';
+    });
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function getStarredNumbers(){
+  var map = new Map();
+  state.history.forEach(function(r){
+    r.entries.forEach(function(e){
+      if(!e.starred) return;
+      var value = r.game==='4d' ? e.value : e.numbers.join('-');
+      var key = r.game+'|'+value;
+      var existing = map.get(key);
+      if(!existing || r.timestamp > existing.lastSeen) map.set(key, {game:r.game, value:value, lastSeen:r.timestamp});
+    });
+  });
+  return Array.from(map.values()).sort(function(a,b){ return b.lastSeen-a.lastSeen; });
+}
+function getHistoryForNumber(game, value){
+  return state.history.filter(function(r){
+    if(r.game!==game) return false;
+    return r.entries.some(function(e){ return game==='4d' ? e.value===value : e.numbers.join('-')===value; });
+  });
+}
+
+function renderFavouritesHTML(){
+  var backAttr = state.selectedFavourite ? 'data-fav-back="1"' : 'data-sub-back="1"';
+  var h = subscreenHeaderHTML(t('menuFavourites'), backAttr);
+  h += '<div class="sheet-scroll" style="flex:1">';
+  if(!state.selectedFavourite){
+    h += '<div class="toggle-track mb-5">'
+       + '<button data-fav-tab="4d" class="toggle-btn '+(state.favouritesTab==='4d'?'active':'')+'">4D</button>'
+       + '<button data-fav-tab="toto" class="toggle-btn '+(state.favouritesTab==='toto'?'active':'')+'">TOTO</button></div>';
+    var starred = getStarredNumbers().filter(function(f){ return f.game===state.favouritesTab; });
+    if(starred.length===0) h += '<div class="font-mono text-[14px] text-center py-6" style="color:var(--muted)">'+t('favEmpty')+'</div>';
+    h += '<div class="space-y-2">';
+    starred.forEach(function(f){
+      h += '<button data-open-fav="'+f.game+'|'+f.value+'" class="w-full flex items-center justify-between surface-card rounded-lg p-3">'
+         + '<span class="flex items-center gap-2">'+icon('Star',{size:14, fill:'#B8871E', color:'#B8871E'})+'<span class="font-mono text-sm" style="letter-spacing:.15em;color:var(--muted)">'+f.value+'</span></span>'
+         + '<span style="color:var(--muted)">&rsaquo;</span></button>';
+    });
+    h += '</div>';
+  } else {
+    var sf = state.selectedFavourite;
+    h += '<div class="font-mono text-[14px] mb-3" style="color:var(--muted)">'+t('favEveryPastSearch')+' <span style="color:var(--ink);font-weight:600">'+sf.value+'</span></div>';
+    h += '<div class="space-y-2">';
+    getHistoryForNumber(sf.game, sf.value).forEach(function(r){
+      h += '<button data-open-fav-history="'+r.id+'|'+sf.value+'" class="w-full flex items-center justify-between text-left surface-card rounded-lg p-3">'
+         + '<span class="font-mono text-[14px]" style="color:var(--muted)">'+(r.timestamp ? r.timestamp.toLocaleDateString(state.language==='zh'?'zh-SG':'en-SG',{day:'2-digit',month:'short',year:'numeric'}) : '')+'</span>'
+         + icon('ChevronRight',{size:18,color:'var(--muted)'})+'</button>';
+    });
+    h += '</div>';
+    h += '<div class="mt-4 flex items-center justify-center gap-1.5 font-mono text-[14px] text-center" style="color:var(--muted)">'+icon('Star',{size:14,color:'var(--muted)'})+' '+t('favStarHint')+'</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function renderInfoHTML(){
+  var h = subscreenHeaderHTML(t('menuAbout'), 'data-sub-back="1"');
+  h += '<div class="sheet-scroll" style="flex:1">';
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('whatIsNumlah')+'</div>';
+  h += '<div class="surface-card rounded-lg p-4 mb-6"><p class="font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('whatIsNumlahBody')+'</p></div>';
+  h += renderTicketDivider('mb-6');
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('howNumlahWorks')+'</div><div class="space-y-3 mb-6">';
+  h += '<div class="ticket-card submenu-card-flat"><div class="ticket-head"><span class="font-mono font-semibold text-[14px]" style="color:var(--ink)">'+t('checkMyNumbersHead')+'</span></div>'
+     + '<div class="ticket-perf submenu-perf-solid"></div><div class="ticket-body"><p class="font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('checkMyNumbersBody')+'</p></div></div>';
+  h += '<div class="ticket-card submenu-card-flat"><div class="ticket-head"><span class="font-mono font-semibold text-[14px]" style="color:var(--ink)">'+t('shakeMeLahHead')+'</span></div>'
+     + '<div class="ticket-perf submenu-perf-solid"></div><div class="ticket-body"><p class="font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('shakeMeLahBody')+'</p></div></div>';
+  h += '</div>';
+  h += renderTicketDivider('mb-6');
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('howNumlahReads')+'</div>';
+  h += '<div class="surface-card rounded-lg p-4 mb-6"><p class="font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('howNumlahReadsBody')+'</p></div>';
+  h += renderTicketDivider('mb-6');
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('appInfo')+'</div>';
+  h += '<div class="surface-card rounded-lg p-4 mb-6 font-mono text-[14px] space-y-2" style="color:var(--ink)">'
+     + '<div class="flex items-center justify-between"><span>'+t('version')+'</span><span style="color:var(--muted)">'+t('versionValue')+'</span></div>'
+     + '<div class="flex items-center justify-between"><span>'+t('lastUpdated')+'</span><span style="color:var(--muted)">'+t('lastUpdatedValue')+'</span></div></div>';
+  h += renderTicketDivider('mb-6');
+
+  h += '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('disclaimer')+'</div>';
+  h += '<div class="surface-card rounded-lg p-4 mb-6 font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('disclaimerBody')+'</div>';
+  h += '<div class="mt-2 px-1 font-mono text-[14px] leading-relaxed text-center" style="color:var(--muted)">'+t('playResponsibly')+'</div>';
+  h += '</div>';
+  return h;
+}
+
+(function(){
+  if(window.storage) return;
+  var mem = {};
+  function backend(){ try{ var k='__t'; localStorage.setItem(k,'1'); localStorage.removeItem(k); return localStorage; }catch(e){ return null; } }
+  var ls = backend(); var pre = 'numlah:';
+  window.storage = {
+    get: function(key){ return Promise.resolve().then(function(){
+      var raw = ls ? ls.getItem(pre+key) : mem[key];
+      if(raw==null) return null;
+      try{ return {key:key, value:JSON.parse(raw)}; }catch(e){ return {key:key, value:raw}; }
+    }); },
+    set: function(key,value){ return Promise.resolve().then(function(){
+      var raw = JSON.stringify(value);
+      if(ls){ try{ ls.setItem(pre+key, raw); }catch(e){ mem[key]=raw; } } else { mem[key]=raw; }
+      return {key:key, value:value};
+    }); }
+  };
+})();
+/* ============================================================
+   STATE
+   ============================================================ */
+var state = {
+  screen: 'setup', // setup | checkResult | realityCheck
+  screenOrigin: 'setup', // setup | history | favourites
+  menuOpen: false,
+  menuScreen: null, // null | preferences | notifications | history | favourites | info
+  game: '4d',
+  checkFourDInput: '',
+  keypadOpen: false,
+  checkFourDList: [], // [{id,value,starred}]
+  totoSelection: new Set(),
+  checkTotoList: [], // [{id,numbers,starred}]
+  checkResults: null, // {game, entries, timestamp}
+  focusedEntryValue: null,
+  realityCheckTarget: null,
+  realityCheckReturnScreen: 'checkResult',
+  rcYears: 3,
+  rcStake: 1,
+  rcBetType: 'big',
+  isProcessing: false,
+  loadingWordIdx: 0,
+  history: [
+    { id:1, game:'4d', timestamp:new Date(Date.now()-86400000), entries:[{id:101,value:'4821',starred:false},{id:102,value:'1234',starred:true},{id:103,value:'8899',starred:false}] },
+    { id:3, game:'toto', timestamp:new Date(Date.now()-172800000), entries:[{id:301,numbers:[3,12,19,27,34,45],starred:false}] },
+    { id:5, game:'4d', timestamp:new Date(Date.now()-259200000), entries:[{id:501,value:'0088',starred:false},{id:502,value:'2468',starred:false}] }
+  ],
+  currentHistoryId: null,
+  historyTab: '4d',
+  favouritesTab: '4d',
+  soundEffect: true,
+  hapticFeedback: true,
+  theme: 'cc',
+  language: 'en',
+  selectedFavourite: null,
+  notifications: [
+    { id:1, titleKey:'notif1Title', bodyKey:'notif1Body', timeKey:'time2h', read:false },
+    { id:2, titleKey:'notif2Title', bodyKey:'notif2Body', timeKey:'timeYesterday', read:false },
+    { id:3, titleKey:'notif3Title', bodyKey:'notif3Body', timeKey:'time3d', read:true }
+  ],
+  shakeTop: 360,
+  shakeExpanded: false,
+  isShaking: false
+};
+var PROCESSING_WORDS = ['Reading history…','Counting frequencies…','Analysing insights…'];
+var procTimer = null, loadWordTimer = null;
+var gameLoaded = false;
+var pendingDelete = null;
+var totoHintVisible = false, totoHintTimer = null;
+function showTotoMaxHint(){
+  totoHintVisible = true;
+  render();
+  clearTimeout(totoHintTimer);
+  totoHintTimer = setTimeout(function(){ totoHintVisible = false; render(); }, 1800);
+}
+
+function isToto(){ return state.game === 'toto'; }
+function hasUnreadNotifs(){ return state.notifications.some(function(n){ return !n.read; }); }
+function markNotificationsReadIfViewed(){
+  if(state.menuScreen === 'notifications'){
+    state.notifications.forEach(function(n){ n.read = true; });
+  }
+}
+
+/* ============================================================
+   RENDER: root dispatcher
+   ============================================================ */
+function render(){
+  renderShakeTab();
+  renderProcessing();
+  renderScreenScroll();
+  renderMenuDrawerUI();
+  renderMenuSubscreenUI();
+}
+
+function renderShakeTab(){
+  var el = document.getElementById('shakeTab');
+  if(state.screen !== 'setup' || state.menuOpen){ el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.className = 'shake-tab ' + (state.shakeExpanded ? 'shake-tab-expanded' : 'shake-tab-collapsed') + (state.isShaking ? ' shake-tab-shaking' : '');
+  el.style.top = state.shakeTop + 'px';
+  el.innerHTML = icon('Shuffle', {size:18});
+  if(state.shakeExpanded){
+    el.innerHTML += '<span class="shake-tab-text"><span class="shake-tab-title">Shake Me Lah</span><span class="shake-tab-sub">Get a Random Number</span></span>';
+  }
+}
+
+function renderProcessing(){
+  var el = document.getElementById('processingOverlay');
+  el.style.display = state.isProcessing ? 'flex' : 'none';
+  if(state.isProcessing){
+    var logoEl = document.getElementById('processingLogo');
+    if(!logoEl.dataset.rendered){
+      logoEl.innerHTML = logoSVG(84, true, true);
+      logoEl.dataset.rendered = '1';
+    }
+    document.getElementById('processingWord').textContent = PROCESSING_WORDS[state.loadingWordIdx];
+  } else {
+    var logoElOff = document.getElementById('processingLogo');
+    logoElOff.innerHTML = '';
+    delete logoElOff.dataset.rendered;
+  }
+}
+
+/* ============================================================
+   RENDER: main screen-scroll area (setup / checkResult / realityCheck)
+   ============================================================ */
+function renderScreenScroll(){
+  var el = document.getElementById('screenScroll');
+  if(state.screen === 'setup'){ el.innerHTML = renderSetupHTML(); wireSetupEvents(); }
+  else if(state.screen === 'checkResult' && state.checkResults){ el.innerHTML = renderCheckResultHTML(); wireCheckResultEvents(); }
+  else if(state.screen === 'realityCheck' && state.realityCheckTarget){ el.innerHTML = renderRealityCheckHTML(); wireRealityCheckEvents(); }
+  else { el.innerHTML = ''; }
+}
+
+function renderSetupHTML(){
+  var next = getNextDrawInfo(state.game);
+  var last = getLastDrawInfo(state.game);
+  var h = '';
+  h += '<div class="mb-4 pt-1 flex items-center justify-between">';
+  h +=   '<div class="flex items-center gap-2.5">';
+  h +=     '<div class="flex-shrink-0">'+logoSVG(44)+'</div>';
+  h +=     '<div><h1 class="font-display font-700 text-2xl leading-none whitespace-nowrap" style="margin:0">NumLah</h1>';
+  h +=     '<p class="tagline leading-none whitespace-nowrap" style="margin-top:4px">'+t('tagline')+'</p></div>';
+  h +=   '</div>';
+  h +=   '<button id="btnMenuToggle" class="relative flex items-center justify-center" style="width:36px;height:36px;background:transparent;border:none">'+icon('Menu',{size:20})+(hasUnreadNotifs()?'<span class="badge-dot"></span>':'')+'</button>';
+  h += '</div>';
+
+  h += renderTicketDivider('mb-4');
+
+  h += '<div class="mb-5">';
+  h +=   '<div class="flex items-center gap-1 mb-2"><span class="font-mono font-semibold text-[13px] tracking-[0.12em]" style="color:var(--mono-blue)">'+t('checkHistory')+'</span></div>';
+  h +=   '<div class="toggle-track">';
+  h +=     '<button data-game="4d" class="toggle-btn btn-game '+(state.game==='4d'?'active':'')+'">4D</button>';
+  h +=     '<button data-game="toto" class="toggle-btn btn-game '+(state.game==='toto'?'active':'')+'">TOTO</button>';
+  h +=   '</div>';
+  h +=   '<div class="mt-2.5 space-y-1.5" style="margin-top:10px">';
+  if(next){
+    h += '<div class="flex items-center justify-center gap-1.5" style="color:var(--muted)"><span class="font-mono text-[14px]" style="display:flex;align-items:center;gap:6px">'+icon('Clock',{size:14})+' '+t('nextDraw')+' '+(state.game==='toto'?'TOTO':'4D')+' '+(state.language==='zh'?'开彩':'Draw:')+' <span style="color:var(--ink);font-weight:600">'+next.dayLabel+' '+next.timeLabel+'</span></span></div>';
+  }
+  if(last && state.game === '4d'){
+    h += '<div class="flex items-center justify-center gap-1.5 font-mono text-[14px]" style="color:var(--muted)">'+icon('ScanSearch',{size:14})+' '+t('lastDraw')+' ('+last.dateLabel+'):</div>';
+    h += '<div class="flex items-center justify-center gap-3 font-mono text-[14px]" style="color:var(--muted)">'
+       + '<span>1st <span style="color:var(--ink);font-weight:600;letter-spacing:.1em">'+last.prizes.first+'</span></span>'
+       + '<span>2nd <span style="color:var(--ink);font-weight:600;letter-spacing:.1em">'+last.prizes.second+'</span></span>'
+       + '<span>3rd <span style="color:var(--ink);font-weight:600;letter-spacing:.1em">'+last.prizes.third+'</span></span></div>';
+    h += '<div class="not-a-prediction text-center px-6">'+t('prizeNote')+'</div>';
+  }
+  if(last && state.game === 'toto'){
+    h += '<div class="flex items-center justify-center gap-1.5 font-mono text-[14px]" style="color:var(--muted)">'+icon('ScanSearch',{size:14})+' '+t('lastDraw')+' ('+last.dateLabel+'): <span style="color:var(--ink);font-weight:600;letter-spacing:.1em">'+last.value+(last.additional?' +'+last.additional:'')+'</span> <span style="color:#9A9CA3">(sample)</span></div>';
+  }
+  h +=   '</div>';
+  h += '</div>';
+
+  h += renderTicketDivider('mb-4');
+
+  if(!isToto()){
+    h += '<div class="mb-5">';
+    h +=   '<div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-2" style="color:var(--mono-blue)">'+t('enterA4d')+'</div>';
+    h +=   '<div class="flex items-center gap-2 mb-5">';
+    h +=     '<input id="fourDInput" value="'+state.checkFourDInput+'" inputmode="numeric" placeholder="0000" maxlength="4" class="flex-1 font-mono outline-none surface-flat" style="font-size:20px;letter-spacing:.3em;text-align:center;border:2px solid var(--line);border-radius:12px;padding:10px 0">';
+    h +=     '<button id="btnAddFourD" '+(state.checkFourDInput.length!==4?'disabled':'')+' class="add-btn" style="width:56px;height:56px">'+icon('Plus',{size:22})+'</button>';
+    h +=   '</div>';
+    if(state.checkFourDList.length > 0){
+      h += '<div class="grid grid-cols-2 gap-2">';
+      state.checkFourDList.forEach(function(entry){
+        h += '<div class="entry-ticket">';
+        h +=   '<span class="entry-ticket-value">'+entry.value+'</span>';
+        h +=   '<div class="entry-ticket-perf"><span class="entry-ticket-notch entry-ticket-notch-top"></span><span class="entry-ticket-notch entry-ticket-notch-bottom"></span></div>';
+        h +=   '<div class="entry-ticket-actions">';
+        h +=     '<button data-star-4d="'+entry.id+'" class="entry-ticket-icon-btn '+(entry.starred?'starred':'')+'">'+icon('Star',{size:20, fill: entry.starred ? '#B8871E' : 'none'})+'</button>';
+        h +=     '<button data-remove-4d="'+entry.id+'" class="entry-ticket-icon-btn">'+icon('X',{size:20})+'</button>';
+        h +=   '</div>';
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  } else {
+    h += '<div class="ticket-card mb-5">';
+    h +=   '<div class="ticket-head">';
+    h +=     '<span class="font-mono font-semibold text-[13px] tracking-[0.15em]" style="color:var(--mono-blue)">'+t('pick6')+' <span style="color:var(--gold)">'+t('optional')+'</span></span>';
+    if(state.totoSelection.size > 0) h += '<button id="btnClearToto" class="font-mono text-[14px]" style="color:var(--red);background:none;border:none">'+t('clear')+'</button>';
+    h +=   '</div>';
+    h +=   '<div class="ticket-perf"></div>';
+    h +=   '<div class="ticket-body">';
+    h +=     '<div class="grid grid-cols-6 gap-2 mb-2">';
+    TOTO_NUMS.forEach(function(n){
+      h += '<button data-toto-num="'+n+'" class="chip chip-lg '+(state.totoSelection.has(n)?'off':'')+'">'+n+'</button>';
+    });
+    h +=     '</div>';
+    h +=     (totoHintVisible ? '<div class="text-center font-mono text-[13px] mb-2" style="color:var(--red)">'+t('totoMaxHint')+'</div>' : '');
+    h +=     '<div class="flex justify-center"><button id="btnAddToto" '+(state.totoSelection.size<6?'disabled':'')+' class="add-btn" style="width:56px;height:56px">'+icon('Plus',{size:22})+'</button></div>';
+    h +=   '</div>';
+    h += '</div>';
+
+    if(state.checkTotoList.length > 0){
+      h += '<div class="space-y-2 mb-5">';
+      state.checkTotoList.forEach(function(entry){
+        h += '<div class="entry-ticket">';
+        h +=   '<span class="entry-ticket-value entry-ticket-value-toto">'+entry.numbers.join('-')+'</span>';
+        h +=   '<div class="entry-ticket-perf"><span class="entry-ticket-notch entry-ticket-notch-top"></span><span class="entry-ticket-notch entry-ticket-notch-bottom"></span></div>';
+        h +=   '<div class="entry-ticket-actions">';
+        h +=     '<button data-star-toto="'+entry.id+'" class="entry-ticket-icon-btn '+(entry.starred?'starred':'')+'">'+icon('Star',{size:20, fill: entry.starred ? '#B8871E' : 'none'})+'</button>';
+        h +=     '<button data-remove-toto="'+entry.id+'" class="entry-ticket-icon-btn">'+icon('X',{size:20})+'</button>';
+        h +=   '</div>';
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+  }
+
+  h += renderTicketDivider('mb-4');
+
+  var hasEntries = isToto() ? state.checkTotoList.length>0 : state.checkFourDList.length>0;
+  h += '<button id="btnCheckPatterns" '+(hasEntries?'':'disabled')+' class="cta-dark w-full font-display rounded-full flex items-center justify-center gap-2" style="font-size:16px;padding:14px 0">'+icon('ScanSearch',{size:20})+' '+t('checkPatterns')+'</button>';
+
+  if(!isToto()){
+    h += '<div class="keypad-panel'+((state.keypadOpen && !state._keypadEntering)?' open':'')+'" id="keypadPanel">';
+    h +=   '<div class="numeric-keypad" id="numericKeypad">';
+    h +=     '<div class="flex items-center justify-between mb-2 px-1"><span class="font-mono text-[13px] tracking-[0.12em]" style="color:var(--mono-blue)">'+t('enter4d')+'</span><button id="btnHideKeypad" class="font-mono" style="font-size:13px;font-weight:600;color:var(--red);background:none;border:none">'+t('hide')+'</button></div>';
+    h +=     '<div class="grid grid-cols-3 gap-2.5">';
+    [1,2,3,4,5,6,7,8,9].forEach(function(d){ h += '<button data-key="'+d+'" class="keypad-key">'+d+'</button>'; });
+    h +=       '<button id="btnKeyClear" class="keypad-key keypad-key-sub">'+t('keyClear')+'</button>';
+    h +=       '<button data-key="0" class="keypad-key">0</button>';
+    h +=       '<button id="btnKeyBack" class="keypad-key keypad-key-sub">&#9003;</button>';
+    h +=     '</div>';
+    h +=   '</div>';
+    h += '</div>';
+  }
+
+  return h;
+}
+
+function renderTicketDivider(cls){
+  return '<div class="ticket-divider '+cls+'"><span class="ticket-divider-line"></span><span class="ticket-divider-dot"></span><span class="ticket-divider-line"></span></div>';
+}
+
+function renderTicketCardHTML(kind, valueOrNumbers, starred, idAttr, allowRealityCheck){
+  var a, insights, valueDisplay, statsHTML;
+  if(kind === '4d'){
+    a = fourDAnalysis(valueOrNumbers);
+    insights = fourDInsights(a);
+    valueDisplay = valueOrNumbers;
+    statsHTML = ''
+      + rowHTML(t('lastSeen'), a.hasAppeared ? (a.lastSeenDays+' '+t('daysAgo')) : t('notInSample'), 'lastSeen')
+      + rowHTML(t('prize'), a.hasAppeared ? a.prizeTier : '—', 'prize')
+      + rowHTML(t('gapStat'), a.gapDraws+' '+t('drawsSinceLast'), 'gapStat')
+      + '<div><div class="font-mono font-semibold text-[13px] tracking-[0.12em] mb-2 flex items-center gap-1" style="color:var(--mono-blue)">'+t('eachDigitHistory')+' '+infoTipHTML('eachDigit')+'</div>'
+      + '<div class="flex gap-1.5">'
+      + a.perDigit.map(function(d){
+          return '<div class="flex-1 text-center"><div class="digit-badge rounded-lg py-2 mb-1"><div class="font-mono text-sm font-bold" style="color:var(--muted)">'+d.digit+'</div></div>'
+            + '<div class="font-mono text-[12px]" style="color:var(--muted)">'+d.freqCount+t('seenSuffix')+'</div>'
+            + '<div class="font-mono text-[12px]" style="color:var(--muted)">'+d.gap+t('gapSuffix')+'</div></div>';
+        }).join('')
+      + '</div></div>';
+  } else {
+    a = totoAnalysis(valueOrNumbers);
+    insights = totoInsights(a);
+    valueDisplay = valueOrNumbers.join('-');
+    statsHTML = ''
+      + rowHTML(t('numbersAddUpTo'), a.sum+' '+t('typicalRange'), 'sum')
+      + '<div><div class="font-mono font-semibold text-[13px] tracking-[0.12em] mb-1.5 flex items-center gap-1" style="color:var(--mono-blue)">'+t('eachNumberHistory')+' '+infoTipHTML('eachNumber')+'</div>'
+      + '<div class="grid grid-cols-4 gap-1.5">'
+      + a.perNumber.map(function(pn){
+          return '<div class="text-center"><div class="digit-badge rounded-lg py-2 mb-1"><div class="font-mono text-sm font-bold" style="color:var(--muted)">'+pn.n+'</div></div>'
+            + '<div class="font-mono text-[12px]" style="color:var(--muted)">'+pn.freqCount+t('seenSuffix')+'</div>'
+            + '<div class="font-mono text-[12px]" style="color:var(--muted)">'+pn.gap+t('gapSuffix')+'</div></div>';
+        }).join('')
+      + '</div></div>';
+  }
+  var insightsHTML = '<div class="pt-5 space-y-2.5" style="padding-top:20px">'
+    + '<div class="font-mono font-semibold text-[13px] tracking-[0.12em] mb-1" style="color:var(--mono-blue)">'+t('whatStandsOut')+'</div>'
+    + insights.map(function(ins){ return '<div class="flex gap-2 font-mono text-[14px] leading-relaxed" style="color:var(--ink)"><span class="flex-shrink-0">·</span><span>'+ins+'</span></div>'; }).join('')
+    + '</div>';
+  var rcBtn = allowRealityCheck ? '<button data-reality-check="'+idAttr+'" data-rc-kind="'+kind+'" class="cta-secondary w-full font-display rounded-full flex items-center justify-center gap-2" style="font-size:16px;padding:16px 0;margin-top:22px;margin-bottom:10px">'+icon('LineChart',{size:18})+' '+t('realityCheck')+'</button>' : '';
+
+  return '<div class="ticket-card mb-4">'
+    + '<div class="ticket-head justify-center"><div class="number-stub">'
+    + '<div class="number-stub-value" '+(kind==='toto'?'style="letter-spacing:.04em;font-size:17px"':'')+'>'+valueDisplay+'</div>'
+    + '<div class="number-stub-perf"><span class="number-stub-notch number-stub-notch-top"></span><span class="number-stub-notch number-stub-notch-bottom"></span></div>'
+    + '<button data-toggle-star="'+idAttr+'" data-star-kind="'+kind+'" class="number-stub-tail">'+icon('Star',{size:22, fill: starred ? '#B8871E' : 'none'})+'</button>'
+    + '</div></div>'
+    + '<div class="ticket-perf"></div>'
+    + '<div class="ticket-body space-y-3">'+statsHTML+insightsHTML+rcBtn+'</div>'
+    + '<div class="px-4 py-2.5 not-a-prediction text-center rounded-b-2xl" style="background:#F1F1F3">'+t('notAPrediction')+'</div>'
+    + '</div>';
+}
+function rowHTML(label, value, tooltip){
+  return '<div class="flex items-center justify-between gap-2">'
+    + '<span class="font-mono font-semibold text-[13px] tracking-[0.12em] flex items-center gap-1" style="color:var(--mono-blue)">'+label+(tooltip?infoTipHTML(tooltip):'')+'</span>'
+    + '<span class="font-mono text-[14px] text-right" style="color:var(--muted)">'+value+'</span></div>';
+}
+function infoTipHTML(key){
+  if(!tooltipText(key)) return '';
+  var svg = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    + '<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.4"/>'
+    + '<path d="M8 7.2v4.4M8 4.8v.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  return '<button data-tip="'+key+'" class="info-tip-btn">'+svg+'</button>';
+}
+
+function renderCheckResultHTML(){
+  var cr = state.checkResults;
+  var h = '';
+  h += '<div class="flex items-center gap-2 mb-1 pt-1">';
+  h +=   '<button id="btnBack" class="flex items-center justify-center" style="width:32px;height:32px;background:transparent;border:none">'+icon('ChevronLeft',{size:20})+'</button>';
+  h +=   '<h1 class="font-display font-700 text-xl leading-none">'+(cr.game==='toto'?t('yourTotoNumbers'):t('your4dNumbers'))+'</h1>';
+  h += '</div>';
+  h += '<div class="font-mono text-[14px] mb-4 text-center" style="color:var(--muted)">'
+     + (cr.timestamp ? cr.timestamp.toLocaleDateString('en-SG',{day:'2-digit',month:'short',year:'numeric'}) : '')
+     + ' · '+(cr.game==='toto'?'TOTO':'4D')+' · '+cr.entries.length+' '+(cr.entries.length===1?t('numberChecked'):t('numbersChecked'))+'</div>';
+
+  var entries = cr.entries.filter(function(e){
+    if(!state.focusedEntryValue) return true;
+    return cr.game==='4d' ? e.value===state.focusedEntryValue : e.numbers.join('-')===state.focusedEntryValue;
+  });
+  entries.forEach(function(e){
+    if(cr.game==='4d') h += renderTicketCardHTML('4d', e.value, e.starred, e.id, true);
+    else h += renderTicketCardHTML('toto', e.numbers, e.starred, e.id, true);
+  });
+
+  h += '<button id="btnCheckMore" class="cta-dark w-full font-display rounded-full flex items-center justify-center gap-2" style="font-size:16px;padding:14px 0;margin-top:4px">'+icon('ScanSearch',{size:20})+' '+t('checkMoreNumbers')+'</button>';
+  return h;
+}
+
+function renderRealityCheckHTML(){
+  var target = state.realityCheckTarget;
+  var seedKey = target.game==='4d' ? parseInt(target.value,10) : target.numbers.reduce(function(s,n){ return s+n*97; },0);
+  var rc = runRealityCheck({ game:target.game, seedKey:seedKey, years:state.rcYears, stakePerDraw:state.rcStake, betType:state.rcBetType });
+  var h = '';
+  h += '<div class="flex items-center gap-2 mb-1 pt-1">';
+  h +=   '<button id="btnRcBack" class="flex items-center justify-center" style="width:32px;height:32px;background:transparent;border:none">'+icon('ChevronLeft',{size:20})+'</button>';
+  h +=   '<h1 class="font-display font-700 text-xl leading-none">'+t('realityCheck')+'</h1>';
+  h += '</div>';
+  h += '<div class="font-mono text-[14px] mb-4 text-center" style="color:var(--muted)">'+t('whatIfPlayed')+' <span style="color:var(--ink);font-weight:600;letter-spacing:.08em">'+(target.game==='4d'?target.value:target.numbers.join('-'))+'</span> '+t('everyDraw')+' '+(target.game==='toto'?'TOTO':'4D')+' '+t('draw')+'</div>';
+
+  h += '<div class="surface-card rounded-xl p-4 mb-4">';
+  // Lookback years slider
+  var yrs = [1,2,3,4,5]; var idx = yrs.indexOf(state.rcYears); var pct = (idx/(yrs.length-1))*100;
+  h += '<div class="mb-1"><div class="flex items-center justify-between mb-2">';
+  h +=   '<span class="font-mono font-semibold text-[13px] tracking-[0.12em] flex items-center gap-1" style="color:var(--mono-blue)">'+t('lookbackYears')+infoTipHTML('lookback')+'</span>';
+  h +=   '<span class="font-display font-700 text-sm" style="color:var(--ink)">'+state.rcYears+'</span></div>';
+  h += '<div class="slider-track-wrap"><div class="slider-track-bg"><div class="slider-track-fill" style="width:'+pct+'%"></div></div>';
+  h += '<div class="slider-thumb" style="left:calc('+pct+'% - 11px)"></div>';
+  h += '<input type="range" id="rcYearsSlider" min="0" max="4" step="1" value="'+idx+'" class="slider-native"></div>';
+  h += '<div class="flex justify-between mt-1.5 px-0.5">'+yrs.map(function(y){ return '<span class="font-mono text-[14px]" style="'+(y===state.rcYears?'color:var(--ink);font-weight:700':'color:var(--muted)')+'">'+y+'</span>'; }).join('')+'</div></div>';
+
+  h += '<div class="mt-4 mb-1"><div class="font-mono font-semibold text-[13px] tracking-[0.12em] mb-2" style="color:var(--mono-blue)">'+t('stakePerDraw')+'</div>';
+  h += '<div class="flex gap-1.5">'+[1,2,5,10].map(function(amt){ return '<button data-rc-stake="'+amt+'" class="pill-btn flex-1 '+(state.rcStake===amt?'active':'')+'">$'+amt+'</button>'; }).join('')+'</div></div>';
+
+  if(target.game==='4d'){
+    h += '<div class="mt-4"><div class="font-mono font-semibold text-[13px] tracking-[0.12em] mb-2" style="color:var(--mono-blue)">'+t('betType')+'</div>';
+    h += '<div class="toggle-track">'
+       + '<button data-rc-bettype="big" class="toggle-btn '+(state.rcBetType==='big'?'active':'')+'">'+t('big')+'</button>'
+       + '<button data-rc-bettype="small" class="toggle-btn '+(state.rcBetType==='small'?'active':'')+'">'+t('small')+'</button></div></div>';
+  } else {
+    h += '<div class="mt-3 font-mono text-[14px] leading-relaxed" style="color:var(--muted)">'+t('ordinaryOnly')+'</div>';
+  }
+  h += '</div>';
+
+  var maxVal = Math.max(rc.spent, rc.won, 1);
+  h += '<div class="ticket-card mb-4"><div class="ticket-body space-y-4">';
+  h +=   '<div class="text-center"><div class="font-mono font-semibold text-[13px] tracking-[0.15em] mb-1" style="color:var(--mono-blue)">'+t('netOver')+' '+state.rcYears+' '+(state.rcYears===1?t('year'):t('years'))+'</div>';
+  h +=   '<div class="font-display font-700 text-3xl" style="color:'+(rc.net<0?'#C0392B':'#25272C')+'">'+(rc.net<0?'–':'+')+'$'+Math.abs(Math.round(rc.net)).toLocaleString()+'</div></div>';
+  h +=   '<div class="space-y-2">'+rowHTML(t('totalSpent'), '$'+rc.spent.toLocaleString()+' · '+rc.totalDraws+' '+t('draws'))+rowHTML(t('totalWon'), '$'+Math.round(rc.won).toLocaleString()+' · '+rc.hits.length+' '+t('draws'))+'</div>';
+  h +=   '<div class="space-y-1.5">'
+       +   '<div class="flex items-center gap-2"><span class="font-mono text-[14px]" style="width:48px;flex-shrink:0;color:var(--muted)">'+t('spentLabel')+'</span><div class="flex-1 rounded-full" style="height:10px;background:#F1F1F3"><div class="h-full rounded-full" style="width:'+((rc.spent/maxVal)*100)+'%;background:linear-gradient(90deg,#6b6e77 0%,#2b2d32 100%)"></div></div></div>'
+       +   '<div class="flex items-center gap-2"><span class="font-mono text-[14px]" style="width:48px;flex-shrink:0;color:var(--muted)">'+t('wonLabel')+'</span><div class="flex-1 rounded-full" style="height:10px;background:#F1F1F3"><div class="h-full rounded-full" style="width:'+((rc.won/maxVal)*100)+'%;background:linear-gradient(90deg,#ecc873 0%,#9c7419 100%)"></div></div></div>'
+       + '</div>';
+  h +=   '<p class="font-mono text-[14px] leading-relaxed" style="color:var(--ink)">'
+       + (rc.hits.length>0
+           ? t('rcParagraphHit')(state.rcYears, (state.rcYears===1?t('year'):t('years')), rc.spent.toLocaleString(), Math.round(rc.won).toLocaleString(), rc.hits.length)
+           : t('rcParagraphMiss')(state.rcYears, (state.rcYears===1?t('year'):t('years')), rc.spent.toLocaleString(), Math.round(rc.won).toLocaleString()))
+       + '</p>';
+  if(rc.hits.length>0){
+    h += '<div class="pt-1 space-y-1.5"><div class="font-mono font-semibold text-[13px] tracking-[0.12em]" style="color:var(--mono-blue)">'+t('matchingDraws')+'</div>';
+    rc.hits.slice(0,3).forEach(function(hit){
+      h += '<div class="flex items-center justify-between font-mono text-[14px]" style="color:var(--muted)"><span>'+hit.tier+' · '+hit.drawsAgo+' '+t('drawsAgo')+'</span><span style="color:var(--ink);font-weight:600">+$'+hit.prize.toLocaleString()+'</span></div>';
+    });
+    if(rc.hits.length>3) h += '<div class="font-mono text-[14px]" style="color:var(--muted)">+'+(rc.hits.length-3)+' '+t('more')+'</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+  h += '<div class="px-4 py-3 font-mono text-[14px] text-center leading-relaxed rounded-b-2xl" style="background:#F1F1F3;color:var(--muted)">'
+     + '<div>'+t('rcDisclaimer')+'</div>'
+     + '<div class="mt-2">'+t('sampleFooter')+'</div></div>';
+  h += '</div>';
+  return h;
+}
+
+
+/* ============================================================
+   EVENT WIRING
+   ============================================================ */
+function wireSetupEvents(){
+  var menuBtn = document.getElementById('btnMenuToggle');
+  if(menuBtn) menuBtn.onclick = function(){ state.menuOpen = true; render(); };
+
+  document.querySelectorAll('.btn-game').forEach(function(b){
+    b.onclick = function(){ state.game = b.getAttribute('data-game'); state.keypadOpen=false; render(); persistGame(); };
+  });
+
+  var input = document.getElementById('fourDInput');
+  if(input){
+    input.oninput = function(){ state.checkFourDInput = input.value.replace(/\D/g,'').slice(0,4); render(); refocusInput(); };
+    input.onfocus = function(){ if(!state.keypadOpen){ openKeypad(); } };
+  }
+  var btnAdd4d = document.getElementById('btnAddFourD');
+  if(btnAdd4d) btnAdd4d.onclick = addFourDEntry;
+
+  document.querySelectorAll('[data-star-4d]').forEach(function(b){
+    b.onclick = function(){ toggleFourDEntryStar(parseInt(b.getAttribute('data-star-4d'),10)); };
+  });
+  document.querySelectorAll('[data-remove-4d]').forEach(function(b){
+    b.onclick = function(){ askDeleteFourD(parseInt(b.getAttribute('data-remove-4d'),10)); };
+  });
+
+  document.querySelectorAll('[data-toto-num]').forEach(function(b){
+    b.onclick = function(){ toggleTotoSelect(parseInt(b.getAttribute('data-toto-num'),10)); };
+  });
+  var btnClearToto = document.getElementById('btnClearToto');
+  if(btnClearToto) btnClearToto.onclick = function(){ state.totoSelection = new Set(); render(); };
+  var btnAddToto = document.getElementById('btnAddToto');
+  if(btnAddToto) btnAddToto.onclick = addTotoSetEntry;
+  document.querySelectorAll('[data-star-toto]').forEach(function(b){
+    b.onclick = function(){ toggleTotoSetEntryStar(parseInt(b.getAttribute('data-star-toto'),10)); };
+  });
+  document.querySelectorAll('[data-remove-toto]').forEach(function(b){
+    b.onclick = function(){ askDeleteToto(parseInt(b.getAttribute('data-remove-toto'),10)); };
+  });
+
+  var btnCheck = document.getElementById('btnCheckPatterns');
+  if(btnCheck) btnCheck.onclick = checkPatterns;
+
+  document.querySelectorAll('[data-key]').forEach(function(b){
+    b.onclick = function(){ var d=b.getAttribute('data-key'); if(state.checkFourDInput.length<4){ state.checkFourDInput += d; render(); } };
+  });
+  var btnKeyClear = document.getElementById('btnKeyClear');
+  if(btnKeyClear) btnKeyClear.onclick = function(){ state.checkFourDInput=''; render(); };
+  var btnKeyBack = document.getElementById('btnKeyBack');
+  if(btnKeyBack) btnKeyBack.onclick = function(){ state.checkFourDInput = state.checkFourDInput.slice(0,-1); render(); };
+  var btnHideKeypad = document.getElementById('btnHideKeypad');
+  if(btnHideKeypad) btnHideKeypad.onclick = closeKeypad;
+
+  wireInfoTips();
+}
+function refocusInput(){
+  var input = document.getElementById('fourDInput');
+  if(input){ input.focus(); var v=input.value; input.setSelectionRange(v.length, v.length); }
+}
+
+// Continuously pins scroll to the bottom for `ms` — since scrollHeight itself
+// grows frame-by-frame as the keypad panel's max-height transitions open,
+// snapping to it each frame makes the content above visibly rise out of the
+// way in lockstep with the panel sliding in, rather than a one-shot scrollTo
+// that clamps against the (still-collapsed) scrollHeight at call time.
+function pinScrollDuring(ms){
+  var scroller = document.getElementById('screenScroll');
+  if(!scroller) return;
+  var start = performance.now();
+  function step(now){
+    scroller.scrollTop = scroller.scrollHeight;
+    if(now - start < ms) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function openKeypad(){
+  if(state.keypadOpen) return;
+  state.keypadOpen = true;
+  state._keypadEntering = true; // render collapsed first, then animate open
+  render();
+  refocusInput();
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var el = document.getElementById('keypadPanel');
+      if(el) el.classList.add('open');
+      state._keypadEntering = false;
+      pinScrollDuring(440); // push content up in lockstep with the panel opening
+    });
+  });
+}
+function closeKeypad(){
+  var el = document.getElementById('keypadPanel');
+  if(!el || !state.keypadOpen){ state.keypadOpen = false; render(); return; }
+  var done = false;
+  function finish(){ if(done) return; done = true; state.keypadOpen = false; render(); }
+  el.classList.remove('open'); // trigger collapse transition
+  el.addEventListener('transitionend', finish, {once:true});
+  setTimeout(finish, 400); // fallback safety net
+}
+
+function addFourDEntry(){
+  if(state.checkFourDInput.length !== 4) return;
+  state.checkFourDList.unshift({ id: Date.now(), value: state.checkFourDInput, starred:false });
+  state.checkFourDInput = '';
+  sfx.addEntry();
+  render();
+}
+function askDeleteFourD(id){
+  var e = state.checkFourDList.find(function(x){ return x.id===id; });
+  if(!e) return;
+  pendingDelete = { kind:'4d', id:id };
+  document.getElementById('confirmTitle').textContent = t('confirmDeleteTitle');
+  document.getElementById('confirmMsg').textContent = t('confirmDeleteMsg4d')(e.value);
+  document.getElementById('confirmKeepBtn').textContent = t('confirmKeep');
+  document.getElementById('confirmDeleteBtn').textContent = t('confirmDelete');
+  document.getElementById('confirmBackdrop').classList.add('open');
+}
+function askDeleteToto(id){
+  var e = state.checkTotoList.find(function(x){ return x.id===id; });
+  if(!e) return;
+  pendingDelete = { kind:'toto', id:id };
+  document.getElementById('confirmTitle').textContent = t('confirmDeleteTitle');
+  document.getElementById('confirmMsg').textContent = t('confirmDeleteMsgToto')(e.numbers.join('-'));
+  document.getElementById('confirmKeepBtn').textContent = t('confirmKeep');
+  document.getElementById('confirmDeleteBtn').textContent = t('confirmDelete');
+  document.getElementById('confirmBackdrop').classList.add('open');
+}
+function cancelDelete(){ pendingDelete = null; document.getElementById('confirmBackdrop').classList.remove('open'); }
+function proceedDelete(){
+  if(!pendingDelete) return;
+  if(pendingDelete.kind === '4d'){
+    state.checkFourDList = state.checkFourDList.filter(function(e){ return e.id!==pendingDelete.id; });
+  } else {
+    state.checkTotoList = state.checkTotoList.filter(function(e){ return e.id!==pendingDelete.id; });
+  }
+  sfx.remove();
+  document.getElementById('confirmBackdrop').classList.remove('open');
+  pendingDelete = null;
+  render();
+}
+function toggleFourDEntryStar(id){ state.checkFourDList = state.checkFourDList.map(function(e){ return e.id===id ? Object.assign({},e,{starred:!e.starred}) : e; }); sfx.star(); render(); }
+function toggleTotoSelect(n){
+  var next = new Set(state.totoSelection);
+  if(next.has(n)) next.delete(n);
+  else if(next.size<7) next.add(n);
+  else { showTotoMaxHint(); return; }
+  state.totoSelection = next; render();
+}
+function addTotoSetEntry(){
+  if(state.totoSelection.size < 6) return;
+  var numbers = Array.from(state.totoSelection).sort(function(a,b){ return a-b; });
+  state.checkTotoList.unshift({ id: Date.now(), numbers:numbers, starred:false });
+  state.totoSelection = new Set();
+  sfx.addEntry(); render();
+}
+function toggleTotoSetEntryStar(id){ state.checkTotoList = state.checkTotoList.map(function(e){ return e.id===id ? Object.assign({},e,{starred:!e.starred}) : e; }); sfx.star(); render(); }
+
+
+function checkPatterns(){
+  var entries = isToto() ? state.checkTotoList : state.checkFourDList;
+  if(entries.length===0) return;
+  sfx.ctaSubmit();
+  state.isProcessing = true;
+  state.loadingWordIdx = 0;
+  render();
+  loadWordTimer = setInterval(function(){ state.loadingWordIdx = (state.loadingWordIdx+1)%PROCESSING_WORDS.length; renderProcessing(); }, 380);
+  procTimer = setTimeout(function(){
+    clearInterval(loadWordTimer);
+    var timestamp = new Date();
+    var id = Date.now();
+    var snapshot = entries.map(function(e){ return Object.assign({}, e, {starred: e.starred||false}); });
+    state.history.unshift({ id:id, game: state.game, timestamp: timestamp, entries: snapshot });
+    state.currentHistoryId = id;
+    state.checkResults = { game: state.game, entries: snapshot, timestamp: timestamp };
+    state.focusedEntryValue = null;
+    state.isProcessing = false;
+    state.screenOrigin = 'setup';
+    state.screen = 'checkResult';
+    render();
+  }, 3000);
+}
+
+function wireCheckResultEvents(){
+  var btnBack = document.getElementById('btnBack');
+  if(btnBack) btnBack.onclick = goBack;
+  var btnMore = document.getElementById('btnCheckMore');
+  if(btnMore) btnMore.onclick = goBack;
+  document.querySelectorAll('[data-toggle-star]').forEach(function(b){
+    b.onclick = function(){ toggleCheckResultEntryStar(parseInt(b.getAttribute('data-toggle-star'),10)); };
+  });
+  document.querySelectorAll('[data-reality-check]').forEach(function(b){
+    b.onclick = function(){
+      var id = parseInt(b.getAttribute('data-reality-check'),10);
+      var kind = b.getAttribute('data-rc-kind');
+      var entry = state.checkResults.entries.find(function(e){ return e.id===id; });
+      if(!entry) return;
+      var target = kind==='4d' ? {game:'4d', value:entry.value} : {game:'toto', numbers:entry.numbers};
+      openRealityCheck(target, 'checkResult');
+    };
+  });
+  wireInfoTips();
+}
+function toggleCheckResultEntryStar(id){
+  state.checkResults.entries = state.checkResults.entries.map(function(e){ return e.id===id ? Object.assign({},e,{starred:!e.starred}) : e; });
+  render();
+}
+function goBack(){
+  state.screen = 'setup';
+  if(state.screenOrigin === 'history'){ state.menuOpen=true; state.menuScreen='history'; }
+  else if(state.screenOrigin === 'favourites'){ state.menuOpen=true; state.menuScreen='favourites'; }
+  render();
+}
+function openRealityCheck(target, fromScreen){
+  state.realityCheckTarget = target;
+  state.realityCheckReturnScreen = fromScreen;
+  state.rcYears = 3; state.rcStake = 1; state.rcBetType = 'big';
+  state.screen = 'realityCheck';
+  render();
+}
+
+function wireRealityCheckEvents(){
+  var btnBack = document.getElementById('btnRcBack');
+  if(btnBack) btnBack.onclick = function(){ state.screen = state.realityCheckReturnScreen; render(); };
+  var slider = document.getElementById('rcYearsSlider');
+  if(slider) slider.oninput = function(){ state.rcYears = [1,2,3,4,5][parseInt(slider.value,10)]; render(); };
+  document.querySelectorAll('[data-rc-stake]').forEach(function(b){
+    b.onclick = function(){ state.rcStake = parseInt(b.getAttribute('data-rc-stake'),10); render(); };
+  });
+  document.querySelectorAll('[data-rc-bettype]').forEach(function(b){
+    b.onclick = function(){ state.rcBetType = b.getAttribute('data-rc-bettype'); render(); };
+  });
+  wireInfoTips();
+}
+
+function wireSubscreenEvents(){
+  document.querySelectorAll('[data-sub-back]').forEach(function(b){ b.onclick = function(){
+    markNotificationsReadIfViewed();
+    state.menuScreen=null; render();
+  }; });
+  document.querySelectorAll('[data-toggle-pref]').forEach(function(b){
+    b.onclick = function(){ var k=b.getAttribute('data-toggle-pref'); state[k] = !state[k]; render(); };
+  });
+  document.querySelectorAll('[data-theme]').forEach(function(b){
+    b.onclick = function(){ state.theme = b.getAttribute('data-theme'); render(); };
+  });
+  document.querySelectorAll('[data-lang]').forEach(function(b){
+    b.onclick = function(){ state.language = b.getAttribute('data-lang'); render(); };
+  });
+  document.querySelectorAll('[data-del-notif]').forEach(function(b){
+    b.onclick = function(){ var id=parseInt(b.getAttribute('data-del-notif'),10); state.notifications = state.notifications.filter(function(n){ return n.id!==id; }); render(); };
+  });
+  document.querySelectorAll('[data-history-tab]').forEach(function(b){
+    b.onclick = function(){ state.historyTab = b.getAttribute('data-history-tab'); render(); };
+  });
+  document.querySelectorAll('[data-open-history]').forEach(function(b){
+    b.onclick = function(){
+      var id = parseInt(b.getAttribute('data-open-history'),10);
+      var r = state.history.find(function(x){ return x.id===id; });
+      if(!r) return;
+      state.currentHistoryId = r.id; state.focusedEntryValue = null; state.screenOrigin='history';
+      state.checkResults = { game:r.game, entries:r.entries, timestamp:r.timestamp };
+      state.screen = 'checkResult'; render();
+    };
+  });
+  document.querySelectorAll('[data-fav-tab]').forEach(function(b){
+    b.onclick = function(){ state.favouritesTab = b.getAttribute('data-fav-tab'); render(); };
+  });
+  document.querySelectorAll('[data-open-fav]').forEach(function(b){
+    b.onclick = function(){
+      var parts = b.getAttribute('data-open-fav').split('|');
+      state.selectedFavourite = { game: parts[0], value: parts[1] };
+      render();
+    };
+  });
+  document.querySelectorAll('[data-fav-back]').forEach(function(b){ b.onclick = function(){ state.selectedFavourite=null; render(); }; });
+  document.querySelectorAll('[data-open-fav-history]').forEach(function(b){
+    b.onclick = function(){
+      var parts = b.getAttribute('data-open-fav-history').split('|');
+      var id = parseInt(parts[0],10), entryValue = parts[1];
+      var r = state.history.find(function(x){ return x.id===id; });
+      if(!r) return;
+      state.focusedEntryValue = entryValue; state.currentHistoryId = r.id; state.screenOrigin='favourites';
+      state.checkResults = { game:r.game, entries:r.entries, timestamp:r.timestamp };
+      state.screen = 'checkResult';
+      state.menuOpen=false; state.menuScreen=null;
+      render();
+    };
+  });
+}
+
+function wireInfoTips(){
+  document.querySelectorAll('[data-tip]').forEach(function(btn){
+    btn.onclick = function(e){
+      e.stopPropagation();
+      var key = btn.getAttribute('data-tip');
+      var popup = document.getElementById('infoTipPopup');
+      if(popup.classList.contains('show') && popup._btn === btn){ popup.classList.remove('show'); return; }
+      popup.textContent = tooltipText(key) || '';
+      popup._btn = btn;
+      var r = btn.getBoundingClientRect();
+      var frame = document.getElementById('phoneFrame');
+      var fr = frame.getBoundingClientRect();
+      var TIP_W = 200;
+      var left = r.left + r.width/2 - TIP_W/2;
+      left = Math.max(fr.left+8, Math.min(fr.right-TIP_W-8, left));
+      popup.style.left = left + 'px';
+      popup.style.top = (r.top - 8) + 'px';
+      popup.classList.add('show');
+    };
+  });
+}
+document.addEventListener('pointerdown', function(e){
+  var popup = document.getElementById('infoTipPopup');
+  if(popup.classList.contains('show') && popup._btn && !popup._btn.contains(e.target) && !popup.contains(e.target)){
+    popup.classList.remove('show');
+  }
+});
+
+/* ============================================================
+   SHAKE ME LAH — draggable edge tab
+   ============================================================ */
+var shakeDrag = { dragging:false, moved:false, startY:0, startTop:360 };
+var SHAKE_MIN_TOP = 120, SHAKE_MAX_TOP = 640;
+(function(){
+  var el = document.getElementById('shakeTab');
+  el.addEventListener('pointerdown', function(e){
+    shakeDrag = { dragging:true, moved:false, startY:e.clientY, startTop: state.shakeTop };
+    try{ el.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  el.addEventListener('pointermove', function(e){
+    if(!shakeDrag.dragging) return;
+    var delta = e.clientY - shakeDrag.startY;
+    if(Math.abs(delta) > 4) shakeDrag.moved = true;
+    state.shakeTop = Math.min(SHAKE_MAX_TOP, Math.max(SHAKE_MIN_TOP, shakeDrag.startTop + delta));
+    renderShakeTab();
+  });
+  el.addEventListener('pointerup', function(){
+    var wasDrag = shakeDrag.moved;
+    shakeDrag.dragging = false;
+    if(wasDrag) return;
+    if(!state.shakeExpanded){ state.shakeExpanded = true; renderShakeTab(); return; }
+    performShake();
+  });
+})();
+function performShake(){
+  var keypadWasClosed = !state.keypadOpen;
+  if(isToto()){
+    var nums = new Set();
+    while(nums.size < 7) nums.add(1 + Math.floor(Math.random()*49));
+    state.totoSelection = nums;
+  } else {
+    var digits = Array.from({length:4}, function(){ return Math.floor(Math.random()*10); }).join('');
+    state.checkFourDInput = digits;
+    if(keypadWasClosed) state._keypadEntering = true;
+    state.keypadOpen = true;
+  }
+  sfx.addEntry();
+  state.isShaking = true;
+  render();
+  if(!isToto() && keypadWasClosed){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        var el = document.getElementById('keypadPanel');
+        if(el) el.classList.add('open');
+        state._keypadEntering = false;
+        pinScrollDuring(440);
+      });
+    });
+  }
+  setTimeout(function(){ state.isShaking=false; renderShakeTab(); }, 420);
+  setTimeout(function(){ state.shakeExpanded=false; renderShakeTab(); }, 450);
+}
+
+/* ============================================================
+   PERSISTED GAME SELECTION
+   ============================================================ */
+function persistGame(){
+  if(!gameLoaded) return;
+  window.storage.set('lastGameSelection', state.game).catch(function(e){ console.error('Could not save game selection', e); });
+}
+window.storage.get('lastGameSelection').then(function(result){
+  if(result && result.value) state.game = result.value;
+}).catch(function(){}).then(function(){ gameLoaded = true; render(); });
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.getElementById('splashLogo').innerHTML = logoSVG(100);
+document.getElementById('splashTagline').textContent = t('tagline');
+setTimeout(function(){ document.getElementById('splash').classList.add('exiting'); }, 2000);
+setTimeout(function(){ document.getElementById('splash').style.display='none'; }, 2400);
+
+render();
+</script>
+</body>
+</html>
